@@ -40,6 +40,96 @@ async function getCoordinatesForLocation(location: string): Promise<{lat: number
   }
 }
 
+// Generate recommendations based on user input when APIs fail
+async function generateUserInputBasedRecommendations(params: {
+  soilType: string;
+  climate: string;
+  season: string;
+  location: string;
+}): Promise<{
+  recommendedCrops: string[];
+  fertilizerAdvice: string[];
+  maintenanceSchedule: string[];
+  seasonalTips: string[];
+} | null> {
+  try {
+    const { soilType, climate, season, location } = params;
+    
+    const recommendations = {
+      recommendedCrops: [] as string[],
+      fertilizerAdvice: [] as string[],
+      maintenanceSchedule: [] as string[],
+      seasonalTips: [] as string[]
+    };
+
+    // Crop recommendations based on user input
+    if (season.toLowerCase().includes('monsoon') || season.toLowerCase().includes('kharif')) {
+      if (soilType.toLowerCase().includes('clay')) {
+        recommendations.recommendedCrops.push("Rice", "Cotton", "Sugarcane");
+      } else if (soilType.toLowerCase().includes('sandy')) {
+        recommendations.recommendedCrops.push("Corn", "Soybean", "Groundnut");
+      } else {
+        recommendations.recommendedCrops.push("Rice", "Corn", "Cotton", "Soybean");
+      }
+    } else if (season.toLowerCase().includes('winter') || season.toLowerCase().includes('rabi')) {
+      if (soilType.toLowerCase().includes('loamy')) {
+        recommendations.recommendedCrops.push("Wheat", "Barley", "Mustard");
+      } else if (soilType.toLowerCase().includes('clay')) {
+        recommendations.recommendedCrops.push("Wheat", "Gram", "Pea");
+      } else {
+        recommendations.recommendedCrops.push("Wheat", "Barley", "Mustard", "Gram");
+      }
+    } else {
+      // Summer crops
+      recommendations.recommendedCrops.push("Corn", "Sunflower", "Fodder crops");
+    }
+
+    // Climate-based adjustments
+    if (climate.toLowerCase().includes('tropical')) {
+      recommendations.recommendedCrops.push("Coconut", "Banana", "Spices");
+    } else if (climate.toLowerCase().includes('temperate')) {
+      recommendations.recommendedCrops.push("Apple", "Potato", "Cabbage");
+    }
+
+    // Basic fertilizer advice
+    recommendations.fertilizerAdvice.push(
+      "Apply organic manure (5-10 tons/hectare) before sowing",
+      "Use NPK fertilizer as per soil test recommendations",
+      "Apply nitrogen in split doses for better utilization",
+      "Consider micronutrient application (Zinc, Boron) if deficient"
+    );
+
+    // Maintenance schedule
+    recommendations.maintenanceSchedule.push(
+      "Regular irrigation as per crop requirement",
+      "Weed management - manual/mechanical/herbicide",
+      "Integrated pest management practices",
+      "Soil testing every 6 months",
+      "Proper crop rotation planning"
+    );
+
+    // Seasonal tips
+    if (season.toLowerCase().includes('monsoon')) {
+      recommendations.seasonalTips.push(
+        "Ensure proper drainage to prevent waterlogging",
+        "Monitor for fungal diseases in humid conditions",
+        "Timely sowing to utilize monsoon effectively"
+      );
+    } else if (season.toLowerCase().includes('winter')) {
+      recommendations.seasonalTips.push(
+        "Protect crops from frost damage",
+        "Reduce irrigation frequency",
+        "Apply phosphorus-rich fertilizers"
+      );
+    }
+
+    return recommendations;
+  } catch (error: any) {
+    console.error("User input based recommendations failed:", error);
+    return null;
+  }
+}
+
 const upload = multer({ 
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
@@ -226,15 +316,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const weatherData = await enhancedAgricultureAPIs.getWeatherData(location);
       const soilData = await enhancedAgricultureAPIs.getSoilData(lat, lon);
       
+      console.log("Weather data:", weatherData);
+      console.log("Soil data:", soilData);
+      
       let recommendations;
       
       if (weatherData && soilData) {
         // Use real API data for scientific recommendations
         recommendations = await enhancedAgricultureAPIs.getCropRecommendations(soilData, weatherData, location);
+        console.log("API recommendations:", recommendations);
       }
       
       if (!recommendations) {
-        // Fallback to Gemini AI only if all real data sources fail
+        // Generate recommendations based on user input when APIs fail
+        recommendations = await generateUserInputBasedRecommendations({
+          soilType,
+          climate,
+          season,
+          location
+        });
+      }
+      
+      // If still no recommendations, fallback to Gemini AI
+      if (!recommendations || !recommendations.recommendedCrops || recommendations.recommendedCrops.length === 0) {
         recommendations = await getCropRecommendations({
           soilType,
           climate,

@@ -23,6 +23,7 @@ import { useGeolocation } from "@/hooks/use-geolocation";
 import { useLanguage } from "@/components/language-provider";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import GoogleMaps from "@/components/GoogleMaps";
 
 // Mock user ID for demo
 const DEMO_USER_ID = "demo-user-123";
