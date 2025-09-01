@@ -2,7 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
 import { storage } from "./storage";
-import { agricultureAPIs } from "./services/agriculture-apis";
+import { enhancedAgricultureAPIs } from "./services/enhanced-agriculture-apis";
+import { webScraperService } from "./services/web-scraper";
 import { 
   getCropRecommendations, 
   analyzePestImage, 
@@ -16,6 +17,28 @@ import {
   insertIotSensorDataSchema,
   insertCommunityPostSchema
 } from "@shared/schema";
+
+// Helper function to get coordinates from location
+async function getCoordinatesForLocation(location: string): Promise<{lat: number, lon: number} | null> {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1`
+    );
+    
+    if (!response.ok) return null;
+    
+    const data = await response.json();
+    if (data.length === 0) return null;
+    
+    return {
+      lat: parseFloat(data[0].lat),
+      lon: parseFloat(data[0].lon)
+    };
+  } catch (error: any) {
+    console.warn("Geocoding failed:", error.message);
+    return null;
+  }
+}
 
 const upload = multer({ 
   storage: multer.memoryStorage(),
@@ -92,8 +115,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
       if (!weatherData || !weatherData.updatedAt || weatherData.updatedAt < oneHourAgo) {
         
-        // Try to fetch from API
-        const apiData = await agricultureAPIs.getWeatherData(location);
+        // Try to fetch from enhanced API (multiple real sources)
+        const apiData = await enhancedAgricultureAPIs.getWeatherData(location);
         
         if (apiData) {
           weatherData = await storage.createWeatherData({
@@ -104,15 +127,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
             uvIndex: apiData.uvIndex,
             rainfall: apiData.rainfall,
             pressure: apiData.pressure,
-            description: apiData.description,
+            description: `${apiData.description} (Source: ${apiData.source})`,
             alerts: apiData.alerts
           });
         } else {
-          // Fallback to Gemini AI
+          // Only use Gemini AI if all real APIs fail
           const geminiWeather = await generateWeatherInsights(location);
           weatherData = await storage.createWeatherData({
             location,
-            ...geminiWeather
+            ...geminiWeather,
+            description: `${geminiWeather.description} (AI-generated due to API failure)`
           });
         }
       }
@@ -136,10 +160,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         prices = await storage.getMarketPrices();
       }
 
-      // If no prices available, fetch from API or generate with Gemini
+      // If no prices available, fetch from enhanced API with web scraping
       if (prices.length === 0) {
         const crops = ["wheat", "rice", "corn", "sugarcane", "cotton"];
-        const apiPrices = await agricultureAPIs.getMarketPrices(crops);
+        
+        // Try enhanced APIs first (real market data)
+        const apiPrices = await enhancedAgricultureAPIs.getMarketPrices(crops);
         
         if (apiPrices.length > 0) {
           for (const price of apiPrices) {
@@ -147,18 +173,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
               cropName: price.crop,
               price: price.price,
               unit: price.unit,
-              market: price.market,
-              location: "India",
+              market: `${price.market} (${price.source})`,
+              location: price.location,
               trend: price.change > 0 ? "up" : price.change < 0 ? "down" : "stable",
               trendPercentage: price.change
             });
           }
           prices = await storage.getMarketPrices();
         } else {
-          // Fallback to Gemini-generated market insights
-          const predictions = await generateMarketPredictions(crops);
-          res.json(predictions);
-          return;
+          // Try web scraping as backup
+          const scrapedPrices = await webScraperService.scrapeAgriculturalMarketData(crops);
+          
+          if (scrapedPrices.length > 0) {
+            for (const price of scrapedPrices) {
+              await storage.createMarketPrice({
+                cropName: price.crop,
+                price: price.price,
+                unit: price.unit,
+                market: `${price.market} (${price.source})`,
+                location: price.location,
+                trend: price.change > 0 ? "up" : price.change < 0 ? "down" : "stable",
+                trendPercentage: price.change
+              });
+            }
+            prices = await storage.getMarketPrices();
+          } else {
+            // Last resort: Gemini-generated market insights
+            const predictions = await generateMarketPredictions(crops);
+            res.json(predictions.map(p => ({...p, market: `${p.market} (AI-generated due to data unavailability)`})));
+            return;
+          }
         }
       }
 
@@ -174,20 +218,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userId, location, soilType, climate, season } = req.body;
       
-      // Try to get real data first
-      const weatherData = await agricultureAPIs.getWeatherData(location);
-      const coordinates = { latitude: 28.6139, longitude: 77.2090 }; // Default to Delhi
-      const soilData = await agricultureAPIs.getSoilData(coordinates.latitude, coordinates.longitude);
+      // Get real data from enhanced APIs
+      const coordinates = await getCoordinatesForLocation(location);
+      const lat = coordinates?.lat || 28.6139; // Default to Delhi
+      const lon = coordinates?.lon || 77.2090;
+      
+      const weatherData = await enhancedAgricultureAPIs.getWeatherData(location);
+      const soilData = await enhancedAgricultureAPIs.getSoilData(lat, lon);
       
       let recommendations;
       
       if (weatherData && soilData) {
-        // Use real API data for recommendations
-        recommendations = await agricultureAPIs.getCropRecommendations(soilData, weatherData, location);
+        // Use real API data for scientific recommendations
+        recommendations = await enhancedAgricultureAPIs.getCropRecommendations(soilData, weatherData, location);
       }
       
       if (!recommendations) {
-        // Fallback to Gemini AI
+        // Fallback to Gemini AI only if all real data sources fail
         recommendations = await getCropRecommendations({
           soilType,
           climate,
@@ -240,7 +287,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const imageBase64 = imageFile.buffer.toString('base64');
       
       // Try Plant.id API first
-      let pestData = await agricultureAPIs.detectPestFromImage(imageBase64);
+      let pestData = await enhancedAgricultureAPIs.detectPestFromImage(imageBase64);
       
       if (!pestData) {
         // Fallback to Gemini AI

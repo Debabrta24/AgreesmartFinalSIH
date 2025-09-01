@@ -1,0 +1,87 @@
+# AgreeGrow API Configuration
+# This file contains all the API keys needed for the enhanced smart farming platform
+# Replace "YOUR_API_KEY_HERE" with your actual API keys
+
+# ===== WEATHER DATA APIs =====
+# Primary weather data source
+OPENWEATHER_API_KEY=YOUR_API_KEY_HERE
+# Alternative naming (both work)
+WEATHER_API_KEY=YOUR_API_KEY_HERE
+# WeatherAPI.com (fallback weather source)
+WEATHERAPI_KEY=YOUR_API_KEY_HERE
+
+# ===== AI/ML APIs =====
+# Google Gemini AI for crop recommendations and analysis
+GEMINI_API_KEY=YOUR_API_KEY_HERE
+
+# ===== PLANT IDENTIFICATION APIs =====
+# Plant.id for pest and disease detection
+PLANT_ID_API_KEY=YOUR_API_KEY_HERE
+
+# ===== SOIL DATA APIs =====
+# NASA POWER API (usually free with "DEMO_KEY")
+NASA_API_KEY=DEMO_KEY
+# SoilGrids API (free but may require registration)
+SOILGRIDS_API_KEY=YOUR_API_KEY_HERE
+
+# ===== DATABASE =====
+# PostgreSQL database connection (managed by Replit)
+DATABASE_URL=YOUR_DATABASE_URL_HERE
+
+# ===== HOW TO GET API KEYS =====
+
+# 1. OpenWeatherMap (Weather Data):
+#    - Visit: https://openweathermap.org/api
+#    - Sign up for free account
+#    - Go to API keys section
+#    - Copy your API key
+
+# 2. Google Gemini AI:
+#    - Visit: https://makersuite.google.com/app/apikey
+#    - Sign in with Google account
+#    - Create new API key
+#    - Copy the key
+
+# 3. Plant.id (Plant/Pest Identification):
+#    - Visit: https://plant.id/
+#    - Sign up for account
+#    - Go to API section
+#    - Get API key (free tier available)
+
+# 4. WeatherAPI.com (Backup Weather):
+#    - Visit: https://www.weatherapi.com/
+#    - Sign up for free account
+#    - Get API key from dashboard
+
+# 5. NASA POWER API:
+#    - Usually works with "DEMO_KEY"
+#    - For production: https://power.larc.nasa.gov/data-access-viewer/
+#    - Register for higher rate limits
+
+# ===== USAGE LIMITS (Free Tiers) =====
+# OpenWeatherMap: 1,000 calls/day, 60 calls/minute
+# Gemini AI: Varies by model, check current limits
+# Plant.id: 100 identifications/month (free tier)
+# WeatherAPI: 1 million calls/month (free tier)
+# NASA POWER: No strict limits with DEMO_KEY
+
+# ===== SETUP INSTRUCTIONS =====
+# 1. Copy this file to your environment
+# 2. Replace YOUR_API_KEY_HERE with actual keys
+# 3. Set these as environment variables in your deployment
+# 4. For Replit: Use the Secrets tab in your Repl
+# 5. Test each API endpoint to verify connectivity
+
+# ===== PRIORITY ORDER =====
+# Weather: OpenWeatherMap → WeatherAPI → NASA POWER
+# Soil: SoilGrids → NASA POWER
+# Market: Web Scraping → Realistic Pricing → Gemini AI
+# Pest Detection: Plant.id → PlantNet → iNaturalist
+# Crop Recommendations: Real data + Science → Gemini AI
+
+# ===== COST OPTIMIZATION =====
+# - Start with free tiers
+# - Monitor usage in API dashboards
+# - Implement caching (already built-in)
+# - Use fallback APIs to prevent failures
+# - Scale up paid plans based on user traffic
