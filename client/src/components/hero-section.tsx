@@ -44,15 +44,15 @@ export function HeroSection({ onStartFarming, onWatchDemo }: HeroSectionProps) {
             <div className="flex items-center space-x-6 text-sm">
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-5 h-5 text-secondary" />
-                <span>AI-Powered</span>
+                <span>{t("hero.aiPowered")}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-5 h-5 text-secondary" />
-                <span>IoT Integration</span>
+                <span>{t("hero.iotIntegration")}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-5 h-5 text-secondary" />
-                <span>Multi-Language</span>
+                <span>{t("hero.multiLanguage")}</span>
               </div>
             </div>
           </div>
@@ -67,7 +67,7 @@ export function HeroSection({ onStartFarming, onWatchDemo }: HeroSectionProps) {
                 <div className="w-3 h-3 bg-accent rounded-full"></div>
                 <div>
                   <div className="text-sm font-medium text-card-foreground">24°C</div>
-                  <div className="text-xs text-muted-foreground">Temperature</div>
+                  <div className="text-xs text-muted-foreground">{t("weather.temperature")}</div>
                 </div>
               </div>
             </div>
@@ -76,7 +76,7 @@ export function HeroSection({ onStartFarming, onWatchDemo }: HeroSectionProps) {
                 <div className="w-3 h-3 bg-primary rounded-full"></div>
                 <div>
                   <div className="text-sm font-medium text-card-foreground">68%</div>
-                  <div className="text-xs text-muted-foreground">Soil Moisture</div>
+                  <div className="text-xs text-muted-foreground">{t("iot.soilMoisture")}</div>
                 </div>
               </div>
             </div>

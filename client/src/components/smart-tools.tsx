@@ -9,7 +9,7 @@ const tools = [
     id: "crop-doctor",
     icon: Camera,
     titleKey: "tools.cropDoctor",
-    description: "AI-powered pest and disease detection using your camera with organic solution recommendations.",
+    descriptionKey: "tools.cropDoctorDesc",
     color: "primary",
     route: "/crop-doctor"
   },
@@ -17,15 +17,15 @@ const tools = [
     id: "price-tracker", 
     icon: TrendingUp,
     titleKey: "tools.priceTracker",
-    description: "Real-time crop prices and AI-powered market predictions to maximize your profits.",
+    descriptionKey: "tools.priceTrackerDesc",
     color: "secondary",
     route: "/price-tracker"
   },
   {
     id: "weather-shield",
     icon: CloudRain,
-    titleKey: "tools.weatherShield", 
-    description: "Advanced weather alerts and risk predictions to protect your crops from extreme conditions.",
+    titleKey: "tools.weatherShield",
+    descriptionKey: "tools.weatherShieldDesc",
     color: "accent",
     route: "/weather-shield"
   },
@@ -33,7 +33,7 @@ const tools = [
     id: "iot-dashboard",
     icon: Activity,
     titleKey: "tools.iotDashboard",
-    description: "Real-time sensor data visualization with 3D effects and automated recommendations.",
+    descriptionKey: "tools.iotDashboardDesc",
     color: "primary",
     route: "/iot-dashboard"
   },
@@ -41,15 +41,15 @@ const tools = [
     id: "profit-calculator",
     icon: Calculator,
     titleKey: "tools.profitCalculator",
-    description: "AI-powered financial insights, cost analysis, and government subsidy information.",
+    descriptionKey: "tools.profitCalculatorDesc",
     color: "secondary",
     route: "/profit-calculator"
   },
   {
     id: "crop-advisor",
     icon: Sprout,
-    titleKey: "tools.cropAdvisor", 
-    description: "Intelligent crop recommendations based on soil, weather, and market conditions.",
+    titleKey: "tools.cropAdvisor",
+    descriptionKey: "tools.cropAdvisorDesc",
     color: "accent",
     route: "/crop-advisor"
   }
@@ -111,14 +111,14 @@ export function SmartTools() {
                     {t(tool.titleKey)}
                   </h3>
                   <p className="text-muted-foreground mb-4">
-                    {tool.description}
+                    {t(tool.descriptionKey)}
                   </p>
                   <Button 
                     className={`w-full ${colors.button}`}
                     onClick={() => setLocation(tool.route)}
                     data-testid={`button-${tool.id}`}
                   >
-                    Open Tool
+                    {t("common.viewMore")}
                   </Button>
                 </CardContent>
               </Card>

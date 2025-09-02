@@ -17,12 +17,14 @@ import {
 } from "lucide-react";
 import { getMarketPrices, getWeatherData, getLatestIoTData } from "@/lib/api";
 import { IoTModal } from "./iot-modal";
+import { useLanguage } from "./language-provider";
 
 // Mock user ID for demo purposes
 const DEMO_USER_ID = "demo-user-123";
 
 export function Dashboard() {
   const [showIoTModal, setShowIoTModal] = useState(false);
+  const { t } = useLanguage();
 
   const { data: marketPrices, isLoading: loadingPrices } = useQuery({
     queryKey: ["/api/market-prices"],
@@ -90,10 +92,10 @@ export function Dashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-foreground mb-4">
-            Farm Intelligence Dashboard
+            {t("dashboard.title")}
           </h2>
           <p className="text-xl text-muted-foreground">
-            Real-time insights powered by AI and IoT sensors
+            {t("dashboard.description")}
           </p>
         </div>
 
@@ -103,7 +105,7 @@ export function Dashboard() {
             {/* Weather Card */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-lg font-semibold">Weather Today</CardTitle>
+                <CardTitle className="text-lg font-semibold">{t("dashboard.weather")}</CardTitle>
                 <Sun className="w-5 h-5 text-secondary" />
               </CardHeader>
               <CardContent>
@@ -116,13 +118,13 @@ export function Dashboard() {
                 ) : (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Temperature</span>
+                      <span className="text-muted-foreground">{t("weather.temperature")}</span>
                       <span className="font-medium" data-testid="weather-temperature">
                         {weatherData?.temperature || 28}°C
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Humidity</span>
+                      <span className="text-muted-foreground">{t("weather.humidity")}</span>
                       <span className="font-medium" data-testid="weather-humidity">
                         {weatherData?.humidity || 65}%
                       </span>
