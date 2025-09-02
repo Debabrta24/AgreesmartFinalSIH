@@ -69,7 +69,7 @@ export default function Medicine() {
   // Add to cart mutation
   const addToCartMutation = useMutation({
     mutationFn: (data: { medicineId: string; quantity: number }) => 
-      apiRequest("/api/cart/add", "POST", data),
+      apiRequest("POST", "/api/cart/add", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
       toast({
@@ -89,7 +89,7 @@ export default function Medicine() {
   // Update cart mutation
   const updateCartMutation = useMutation({
     mutationFn: (data: { id: string; quantity: number }) => 
-      apiRequest(`/api/cart/${data.id}`, "PUT", { quantity: data.quantity }),
+      apiRequest("PUT", `/api/cart/${data.id}`, { quantity: data.quantity }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
     }
@@ -97,7 +97,7 @@ export default function Medicine() {
 
   // Remove from cart mutation
   const removeFromCartMutation = useMutation({
-    mutationFn: (id: string) => apiRequest(`/api/cart/${id}`, "DELETE"),
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/cart/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
     }
@@ -105,7 +105,7 @@ export default function Medicine() {
 
   // Place order mutation
   const placeOrderMutation = useMutation({
-    mutationFn: (orderData: any) => apiRequest("/api/orders", "POST", orderData),
+    mutationFn: (orderData: any) => apiRequest("POST", "/api/orders", orderData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
       setCheckoutOpen(false);
