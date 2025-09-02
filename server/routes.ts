@@ -15,7 +15,8 @@ import {
   insertCropRecommendationSchema,
   insertPestDetectionSchema,
   insertIotSensorDataSchema,
-  insertCommunityPostSchema
+  insertCommunityPostSchema,
+  insertApiKeySchema
 } from "@shared/schema";
 
 // Helper function to get coordinates from location
@@ -502,6 +503,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(post);
     } catch (error) {
       res.status(500).json({ message: "Failed to like post" });
+    }
+  });
+
+  // API Key management endpoints
+  app.get("/api/api-keys/:userId", async (req, res) => {
+    try {
+      const apiKeys = await storage.getApiKeys(req.params.userId);
+      res.json(apiKeys);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get API keys" });
+    }
+  });
+
+  app.post("/api/api-keys", async (req, res) => {
+    try {
+      const apiKeyData = insertApiKeySchema.parse(req.body);
+      const apiKey = await storage.createApiKey(apiKeyData);
+      res.json(apiKey);
+    } catch (error) {
+      console.error("API key creation error:", error);
+      res.status(400).json({ message: "Invalid API key data" });
+    }
+  });
+
+  app.put("/api/api-keys/:id", async (req, res) => {
+    try {
+      const updates = insertApiKeySchema.partial().parse(req.body);
+      const apiKey = await storage.updateApiKey(req.params.id, updates);
+      
+      if (!apiKey) {
+        return res.status(404).json({ message: "API key not found" });
+      }
+      
+      res.json(apiKey);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update API key" });
+    }
+  });
+
+  app.delete("/api/api-keys/:id", async (req, res) => {
+    try {
+      const success = await storage.deleteApiKey(req.params.id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "API key not found" });
+      }
+      
+      res.json({ message: "API key deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete API key" });
     }
   });
 

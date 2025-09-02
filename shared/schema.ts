@@ -85,6 +85,16 @@ export const communityPosts = pgTable("community_posts", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const apiKeys = pgTable("api_keys", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id),
+  keyName: text("key_name").notNull(), // weather, gemini, plantId, nasa, soilGrids
+  keyValue: text("key_value").notNull(),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   email: true,
@@ -121,6 +131,12 @@ export const insertCommunityPostSchema = createInsertSchema(communityPosts).omit
   likes: true,
 });
 
+export const insertApiKeySchema = createInsertSchema(apiKeys).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type CropRecommendation = typeof cropRecommendations.$inferSelect;
@@ -135,3 +151,5 @@ export type IotSensorData = typeof iotSensorData.$inferSelect;
 export type InsertIotSensorData = z.infer<typeof insertIotSensorDataSchema>;
 export type CommunityPost = typeof communityPosts.$inferSelect;
 export type InsertCommunityPost = z.infer<typeof insertCommunityPostSchema>;
+export type ApiKey = typeof apiKeys.$inferSelect;
+export type InsertApiKey = z.infer<typeof insertApiKeySchema>;

@@ -63,6 +63,13 @@ export const translations = {
     "language.hindi": "Hindi", 
     "language.bengali": "Bengali",
     "language.tamil": "Tamil",
+    
+    // Footer
+    "footer.features": "Features",
+    "footer.resources": "Resources",
+    "footer.contact": "Contact",
+    "footer.manageKeys": "Manage API Keys",
+    "footer.rights": "All rights reserved",
   },
   hi: {
     // Navigation
@@ -128,6 +135,13 @@ export const translations = {
     "language.hindi": "हिंदी",
     "language.bengali": "बंगाली", 
     "language.tamil": "तमिल",
+    
+    // Footer
+    "footer.features": "विशेषताएं",
+    "footer.resources": "संसाधन",
+    "footer.contact": "संपर्क",
+    "footer.manageKeys": "API कुंजियां प्रबंधित करें",
+    "footer.rights": "सभी अधिकार सुरक्षित",
   },
   bn: {
     // Navigation
@@ -193,6 +207,13 @@ export const translations = {
     "language.hindi": "হিন্দি",
     "language.bengali": "বাংলা",
     "language.tamil": "তামিল",
+    
+    // Footer
+    "footer.features": "বৈশিষ্ট্য",
+    "footer.resources": "সম্পদ",
+    "footer.contact": "যোগাযোগ",
+    "footer.manageKeys": "API কী পরিচালনা করুন",
+    "footer.rights": "সমস্ত অধিকার সংরক্ষিত",
   },
   ta: {
     // Navigation
@@ -258,6 +279,13 @@ export const translations = {
     "language.hindi": "ஹிந்தி",
     "language.bengali": "বাংলা",
     "language.tamil": "தமிழ்",
+    
+    // Footer
+    "footer.features": "அம்சங்கள்",
+    "footer.resources": "வளங்கள்",
+    "footer.contact": "தொடர்பு",
+    "footer.manageKeys": "API விசைகளை நிர்வகிக்கவும்",
+    "footer.rights": "அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை",
   }
 };
 

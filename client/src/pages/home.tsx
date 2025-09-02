@@ -2,10 +2,17 @@ import { HeroSection } from "@/components/hero-section";
 import { SmartTools } from "@/components/smart-tools";
 import { Dashboard } from "@/components/dashboard";
 import { Features } from "@/components/features";
+import { ApiKeyModal } from "@/components/api-key-modal";
 import { useLocation } from "wouter";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Settings } from "lucide-react";
+import { useLanguage } from "@/components/language-provider";
 
 export default function Home() {
   const [, setLocation] = useLocation();
+  const [apiKeyModalOpen, setApiKeyModalOpen] = useState(false);
+  const { t } = useLanguage();
 
   const handleStartFarming = () => {
     setLocation("/crop-advisor");
@@ -36,13 +43,13 @@ export default function Home() {
                 </div>
                 <span className="text-xl font-bold text-card-foreground">AgreeGrow</span>
               </div>
-              <p className="text-muted-foreground">Smart Farming. Smarter Future.</p>
+              <p className="text-muted-foreground">{t("hero.subtitle")}</p>
             </div>
             
             <div>
-              <h3 className="font-semibold text-card-foreground mb-4">Features</h3>
+              <h3 className="font-semibold text-card-foreground mb-4">{t("footer.features")}</h3>
               <ul className="space-y-2 text-muted-foreground text-sm">
-                <li>Crop Analysis</li>
+                <li>{t("tools.cropDoctor")}</li>
                 <li>Pest Detection</li>
                 <li>Market Intelligence</li>
                 <li>Weather Alerts</li>
@@ -51,7 +58,7 @@ export default function Home() {
             </div>
 
             <div>
-              <h3 className="font-semibold text-card-foreground mb-4">Resources</h3>
+              <h3 className="font-semibold text-card-foreground mb-4">{t("footer.resources")}</h3>
               <ul className="space-y-2 text-muted-foreground text-sm">
                 <li>Documentation</li>
                 <li>API Reference</li>
@@ -62,20 +69,37 @@ export default function Home() {
             </div>
 
             <div>
-              <h3 className="font-semibold text-card-foreground mb-4">Contact</h3>
+              <h3 className="font-semibold text-card-foreground mb-4">{t("footer.contact")}</h3>
               <ul className="space-y-2 text-muted-foreground text-sm">
                 <li>hello@agreegrow.com</li>
                 <li>+91 98765 43210</li>
                 <li>Mumbai, India</li>
               </ul>
+              <div className="mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setApiKeyModalOpen(true)}
+                  className="w-full"
+                  data-testid="button-manage-api-keys"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  {t("footer.manageKeys")}
+                </Button>
+              </div>
             </div>
           </div>
           
           <div className="border-t border-border mt-8 pt-8 text-center text-muted-foreground text-sm">
-            <p>&copy; 2024 AgreeGrow. All rights reserved.</p>
+            <p>&copy; 2024 AgreeGrow. {t("footer.rights")}</p>
           </div>
         </div>
       </footer>
+      
+      <ApiKeyModal 
+        open={apiKeyModalOpen} 
+        onOpenChange={setApiKeyModalOpen} 
+      />
     </div>
   );
 }

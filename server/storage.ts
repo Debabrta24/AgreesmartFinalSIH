@@ -12,7 +12,9 @@ import {
   type IotSensorData,
   type InsertIotSensorData,
   type CommunityPost,
-  type InsertCommunityPost
+  type InsertCommunityPost,
+  type ApiKey,
+  type InsertApiKey
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -50,6 +52,12 @@ export interface IStorage {
   getCommunityPostsByCategory(category: string): Promise<CommunityPost[]>;
   createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost>;
   likeCommunityPost(id: string): Promise<CommunityPost | undefined>;
+
+  // API Key management
+  getApiKeys(userId: string): Promise<ApiKey[]>;
+  createApiKey(apiKey: InsertApiKey): Promise<ApiKey>;
+  updateApiKey(id: string, updates: Partial<InsertApiKey>): Promise<ApiKey | undefined>;
+  deleteApiKey(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -60,6 +68,7 @@ export class MemStorage implements IStorage {
   private weatherData: Map<string, WeatherData> = new Map();
   private iotSensorData: Map<string, IotSensorData> = new Map();
   private communityPosts: Map<string, CommunityPost> = new Map();
+  private apiKeys: Map<string, ApiKey> = new Map();
 
   constructor() {
     this.initializeSampleData();
@@ -276,6 +285,36 @@ export class MemStorage implements IStorage {
     const updatedPost = { ...post, likes: (post.likes || 0) + 1 };
     this.communityPosts.set(id, updatedPost);
     return updatedPost;
+  }
+
+  async getApiKeys(userId: string): Promise<ApiKey[]> {
+    return Array.from(this.apiKeys.values()).filter(key => key.userId === userId);
+  }
+
+  async createApiKey(apiKey: InsertApiKey): Promise<ApiKey> {
+    const id = randomUUID();
+    const newApiKey: ApiKey = {
+      ...apiKey,
+      id,
+      userId: apiKey.userId || null,
+      description: apiKey.description || null,
+      createdAt: new Date()
+    };
+    this.apiKeys.set(id, newApiKey);
+    return newApiKey;
+  }
+
+  async updateApiKey(id: string, updates: Partial<InsertApiKey>): Promise<ApiKey | undefined> {
+    const apiKey = this.apiKeys.get(id);
+    if (!apiKey) return undefined;
+    
+    const updatedApiKey = { ...apiKey, ...updates };
+    this.apiKeys.set(id, updatedApiKey);
+    return updatedApiKey;
+  }
+
+  async deleteApiKey(id: string): Promise<boolean> {
+    return this.apiKeys.delete(id);
   }
 }
 
