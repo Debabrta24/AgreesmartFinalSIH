@@ -282,10 +282,10 @@ export default function Medicine() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="w-full">
         {/* Medicine Grid */}
-        <div className="lg:col-span-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredMedicines.map((medicine: Medicine) => (
               <Card key={medicine.id} className="hover:shadow-lg transition-shadow" data-testid={`medicine-card-${medicine.id}`}>
                 <CardHeader className="p-4">
@@ -399,17 +399,16 @@ export default function Medicine() {
           )}
         </div>
 
-        {/* Cart Sidebar */}
-        {cartOpen && (
-          <div className="lg:col-span-1">
-            <Card className="sticky top-4">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <ShoppingCart className="w-5 h-5" />
-                  {t("medicine.cart")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+        {/* Cart Modal */}
+        <Dialog open={cartOpen} onOpenChange={setCartOpen}>
+          <DialogContent className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <ShoppingCart className="w-5 h-5" />
+                {t("medicine.cart")}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
                 {cartItems.length === 0 ? (
                   <p className="text-muted-foreground text-center py-4">
                     {t("medicine.emptyCart")}
@@ -624,10 +623,9 @@ export default function Medicine() {
                     </div>
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          </div>
-        )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
