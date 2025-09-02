@@ -19,6 +19,7 @@ import CropAdvisor from "@/pages/crop-advisor";
 import About from "@/pages/about";
 import ProjectIdea from "@/pages/project-idea";
 import Community from "@/pages/community";
+import Medicine from "@/pages/medicine";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -34,6 +35,7 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/project-idea" component={ProjectIdea} />
       <Route path="/community" component={Community} />
+      <Route path="/medicine" component={Medicine} />
       <Route component={NotFound} />
     </Switch>
   );

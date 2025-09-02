@@ -14,7 +14,15 @@ import {
   type CommunityPost,
   type InsertCommunityPost,
   type ApiKey,
-  type InsertApiKey
+  type InsertApiKey,
+  type Medicine,
+  type InsertMedicine,
+  type CartItem,
+  type InsertCartItem,
+  type Order,
+  type InsertOrder,
+  type OrderItem,
+  type InsertOrderItem
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -58,6 +66,28 @@ export interface IStorage {
   createApiKey(apiKey: InsertApiKey): Promise<ApiKey>;
   updateApiKey(id: string, updates: Partial<InsertApiKey>): Promise<ApiKey | undefined>;
   deleteApiKey(id: string): Promise<boolean>;
+
+  // Medicine management
+  getMedicines(): Promise<Medicine[]>;
+  getMedicine(id: string): Promise<Medicine | undefined>;
+  getMedicinesByCategory(category: string): Promise<Medicine[]>;
+  getMedicinesByPestTarget(pestTarget: string): Promise<Medicine[]>;
+  createMedicine(medicine: InsertMedicine): Promise<Medicine>;
+  updateMedicine(id: string, updates: Partial<InsertMedicine>): Promise<Medicine | undefined>;
+
+  // Cart management
+  getCartItems(userId: string): Promise<CartItem[]>;
+  addToCart(item: InsertCartItem): Promise<CartItem>;
+  updateCartItem(id: string, quantity: number): Promise<CartItem | undefined>;
+  removeFromCart(id: string): Promise<boolean>;
+  clearCart(userId: string): Promise<boolean>;
+
+  // Order management
+  getOrders(userId: string): Promise<Order[]>;
+  getOrder(id: string): Promise<Order | undefined>;
+  createOrder(order: InsertOrder): Promise<Order>;
+  getOrderItems(orderId: string): Promise<OrderItem[]>;
+  createOrderItem(orderItem: InsertOrderItem): Promise<OrderItem>;
 }
 
 export class MemStorage implements IStorage {
@@ -69,6 +99,10 @@ export class MemStorage implements IStorage {
   private iotSensorData: Map<string, IotSensorData> = new Map();
   private communityPosts: Map<string, CommunityPost> = new Map();
   private apiKeys: Map<string, ApiKey> = new Map();
+  private medicines: Map<string, Medicine> = new Map();
+  private cartItems: Map<string, CartItem> = new Map();
+  private orders: Map<string, Order> = new Map();
+  private orderItems: Map<string, OrderItem> = new Map();
 
   constructor() {
     this.initializeSampleData();
@@ -95,6 +129,104 @@ export class MemStorage implements IStorage {
         trend: price.trend || null,
         trendPercentage: price.trendPercentage || null,
         updatedAt: new Date() 
+      });
+    });
+
+    // Initialize with sample medicines
+    const sampleMedicines: InsertMedicine[] = [
+      {
+        name: "BioNeem Oil",
+        description: "Organic neem-based pesticide for aphids, whiteflies, and mites",
+        price: 450,
+        category: "organic",
+        brand: "EcoFarm",
+        imageUrl: "https://images.unsplash.com/photo-1584462841516-0c82e5b6e5e1?w=300&h=300&fit=crop",
+        inStock: true,
+        stockQuantity: 50,
+        pestTargets: ["aphids", "whiteflies", "spider mites", "thrips"],
+        activeIngredients: ["Azadirachtin", "Neem oil"],
+        usage: "Dilute 5ml in 1 liter of water. Spray in evening hours."
+      },
+      {
+        name: "Copper Fungicide",
+        description: "Effective copper-based fungicide for blight and leaf spot diseases",
+        price: 320,
+        category: "chemical",
+        brand: "CropGuard",
+        imageUrl: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=300&h=300&fit=crop",
+        inStock: true,
+        stockQuantity: 75,
+        pestTargets: ["blight", "leaf spot", "downy mildew", "bacterial diseases"],
+        activeIngredients: ["Copper Hydroxide 77%"],
+        usage: "Mix 2-3g per liter of water. Apply as foliar spray."
+      },
+      {
+        name: "Turmeric Powder Pesticide",
+        description: "Traditional ayurvedic remedy for soil-borne diseases and pests",
+        price: 180,
+        category: "ayurvedic",
+        brand: "AyurAgri",
+        imageUrl: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=300&h=300&fit=crop",
+        inStock: true,
+        stockQuantity: 100,
+        pestTargets: ["root rot", "cutworms", "soil pests", "fungal diseases"],
+        activeIngredients: ["Curcumin", "Essential oils"],
+        usage: "Mix 50g in 5 liters of water. Apply around root zone."
+      },
+      {
+        name: "Bt Organic Spray",
+        description: "Bacillus thuringiensis based organic caterpillar control",
+        price: 680,
+        category: "organic",
+        brand: "BioCrop",
+        imageUrl: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=300&fit=crop",
+        inStock: true,
+        stockQuantity: 40,
+        pestTargets: ["caterpillars", "bollworm", "armyworm", "cabbage worm"],
+        activeIngredients: ["Bacillus thuringiensis"],
+        usage: "Apply 2ml per liter during early larval stage."
+      },
+      {
+        name: "Imidacloprid 17.8% SL",
+        description: "Systemic insecticide for sucking pests and soil insects",
+        price: 890,
+        category: "chemical",
+        brand: "AgroTech",
+        imageUrl: "https://images.unsplash.com/photo-1628187235627-340f19408f6d?w=300&h=300&fit=crop",
+        inStock: true,
+        stockQuantity: 60,
+        pestTargets: ["aphids", "jassids", "whiteflies", "thrips", "termites"],
+        activeIngredients: ["Imidacloprid 17.8%"],
+        usage: "Use 0.5ml per liter for foliar spray or soil drench."
+      },
+      {
+        name: "Panchgavya Organic",
+        description: "Traditional five-ingredient organic growth promoter and pest deterrent",
+        price: 250,
+        category: "ayurvedic",
+        brand: "VedicFarm",
+        imageUrl: "https://images.unsplash.com/photo-1609501676725-7186f0e1f4d2?w=300&h=300&fit=crop",
+        inStock: true,
+        stockQuantity: 80,
+        pestTargets: ["general pests", "plant stress", "nutrient deficiency"],
+        activeIngredients: ["Cow dung", "Cow urine", "Milk", "Ghee", "Curd"],
+        usage: "Dilute 30ml in 1 liter water. Spray weekly."
+      }
+    ];
+
+    sampleMedicines.forEach(medicine => {
+      const id = randomUUID();
+      this.medicines.set(id, {
+        ...medicine,
+        id,
+        brand: medicine.brand || null,
+        imageUrl: medicine.imageUrl || null,
+        inStock: medicine.inStock ?? null,
+        stockQuantity: medicine.stockQuantity || null,
+        pestTargets: medicine.pestTargets || null,
+        activeIngredients: medicine.activeIngredients || null,
+        usage: medicine.usage || null,
+        createdAt: new Date()
       });
     });
   }
@@ -297,8 +429,9 @@ export class MemStorage implements IStorage {
       ...apiKey,
       id,
       userId: apiKey.userId || null,
-      description: apiKey.description || null,
-      createdAt: new Date()
+      isActive: apiKey.isActive || null,
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
     this.apiKeys.set(id, newApiKey);
     return newApiKey;
@@ -315,6 +448,152 @@ export class MemStorage implements IStorage {
 
   async deleteApiKey(id: string): Promise<boolean> {
     return this.apiKeys.delete(id);
+  }
+
+  // Medicine management methods
+  async getMedicines(): Promise<Medicine[]> {
+    return Array.from(this.medicines.values());
+  }
+
+  async getMedicine(id: string): Promise<Medicine | undefined> {
+    return this.medicines.get(id);
+  }
+
+  async getMedicinesByCategory(category: string): Promise<Medicine[]> {
+    return Array.from(this.medicines.values()).filter(med => med.category === category);
+  }
+
+  async getMedicinesByPestTarget(pestTarget: string): Promise<Medicine[]> {
+    return Array.from(this.medicines.values()).filter(med => 
+      med.pestTargets && med.pestTargets.some(target => 
+        target.toLowerCase().includes(pestTarget.toLowerCase())
+      )
+    );
+  }
+
+  async createMedicine(medicine: InsertMedicine): Promise<Medicine> {
+    const id = randomUUID();
+    const newMedicine: Medicine = {
+      ...medicine,
+      id,
+      brand: medicine.brand || null,
+      imageUrl: medicine.imageUrl || null,
+      inStock: medicine.inStock ?? null,
+      stockQuantity: medicine.stockQuantity || null,
+      pestTargets: medicine.pestTargets || null,
+      activeIngredients: medicine.activeIngredients || null,
+      usage: medicine.usage || null,
+      createdAt: new Date()
+    };
+    this.medicines.set(id, newMedicine);
+    return newMedicine;
+  }
+
+  async updateMedicine(id: string, updates: Partial<InsertMedicine>): Promise<Medicine | undefined> {
+    const medicine = this.medicines.get(id);
+    if (!medicine) return undefined;
+    
+    const updatedMedicine = { ...medicine, ...updates };
+    this.medicines.set(id, updatedMedicine);
+    return updatedMedicine;
+  }
+
+  // Cart management methods
+  async getCartItems(userId: string): Promise<CartItem[]> {
+    return Array.from(this.cartItems.values()).filter(item => item.userId === userId);
+  }
+
+  async addToCart(item: InsertCartItem): Promise<CartItem> {
+    // Check if item already exists in cart
+    const existingItem = Array.from(this.cartItems.values()).find(
+      cartItem => cartItem.userId === item.userId && cartItem.medicineId === item.medicineId
+    );
+
+    if (existingItem) {
+      // Update quantity if item already exists
+      const updatedItem = { ...existingItem, quantity: (existingItem.quantity || 0) + (item.quantity || 1) };
+      this.cartItems.set(existingItem.id, updatedItem);
+      return updatedItem;
+    } else {
+      // Add new item
+      const id = randomUUID();
+      const cartItem: CartItem = {
+        ...item,
+        id,
+        userId: item.userId || null,
+        medicineId: item.medicineId || null,
+        quantity: item.quantity || 1,
+        createdAt: new Date()
+      };
+      this.cartItems.set(id, cartItem);
+      return cartItem;
+    }
+  }
+
+  async updateCartItem(id: string, quantity: number): Promise<CartItem | undefined> {
+    const item = this.cartItems.get(id);
+    if (!item) return undefined;
+    
+    const updatedItem = { ...item, quantity };
+    this.cartItems.set(id, updatedItem);
+    return updatedItem;
+  }
+
+  async removeFromCart(id: string): Promise<boolean> {
+    return this.cartItems.delete(id);
+  }
+
+  async clearCart(userId: string): Promise<boolean> {
+    const userItems = Array.from(this.cartItems.entries()).filter(
+      ([_, item]) => item.userId === userId
+    );
+    
+    userItems.forEach(([id]) => {
+      this.cartItems.delete(id);
+    });
+    
+    return true;
+  }
+
+  // Order management methods
+  async getOrders(userId: string): Promise<Order[]> {
+    return Array.from(this.orders.values()).filter(order => order.userId === userId)
+      .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
+  }
+
+  async getOrder(id: string): Promise<Order | undefined> {
+    return this.orders.get(id);
+  }
+
+  async createOrder(order: InsertOrder): Promise<Order> {
+    const id = randomUUID();
+    const newOrder: Order = {
+      ...order,
+      id,
+      userId: order.userId || null,
+      status: order.status || null,
+      deliveryAddress: order.deliveryAddress || null,
+      createdAt: new Date()
+    };
+    this.orders.set(id, newOrder);
+    return newOrder;
+  }
+
+  async getOrderItems(orderId: string): Promise<OrderItem[]> {
+    return Array.from(this.orderItems.values()).filter(item => item.orderId === orderId);
+  }
+
+  async createOrderItem(orderItem: InsertOrderItem): Promise<OrderItem> {
+    const id = randomUUID();
+    const newOrderItem: OrderItem = {
+      ...orderItem,
+      id,
+      orderId: orderItem.orderId || null,
+      medicineId: orderItem.medicineId || null,
+      createdAt: new Date()
+    };
+    this.orderItems.set(id, newOrderItem);
+    return newOrderItem;
   }
 }
 

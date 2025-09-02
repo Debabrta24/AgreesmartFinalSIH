@@ -28,7 +28,7 @@ export function Navigation({ user }: NavigationProps) {
     { path: "/", label: t("nav.home") },
     { path: "/project-idea", label: t("nav.project") },
     { path: "/about", label: t("nav.about") },
-    { path: "/tools", label: t("nav.tools") },
+    { path: "/medicine", label: t("nav.tools") },
   ];
 
   const NavItems = ({ className = "", onItemClick }: { className?: string; onItemClick?: () => void }) => (

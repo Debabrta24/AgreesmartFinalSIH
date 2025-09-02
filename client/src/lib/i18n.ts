@@ -4,7 +4,7 @@ export const translations = {
     "nav.home": "Home",
     "nav.project": "Project Idea",
     "nav.about": "About Us", 
-    "nav.tools": "Smart Tools",
+    "nav.tools": "Buy Medicine",
     
     // Hero section
     "hero.title": "Smart Farming.",
@@ -247,7 +247,7 @@ export const translations = {
     "nav.home": "मुख्य",
     "nav.project": "परियोजना विचार",
     "nav.about": "हमारे बारे में",
-    "nav.tools": "स्मार्ट उपकरण",
+    "nav.tools": "दवा खरीदें",
     
     // Hero section
     "hero.title": "स्मार्ट खेती।",

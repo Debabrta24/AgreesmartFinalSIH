@@ -95,6 +95,48 @@ export const apiKeys = pgTable("api_keys", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const medicines = pgTable("medicines", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  price: real("price").notNull(),
+  category: text("category").notNull(), // organic, chemical, ayurvedic
+  brand: text("brand"),
+  imageUrl: text("image_url"),
+  inStock: boolean("in_stock").default(true),
+  stockQuantity: integer("stock_quantity").default(100),
+  pestTargets: text("pest_targets").array(), // array of pests this medicine treats
+  activeIngredients: text("active_ingredients").array(),
+  usage: text("usage"), // instructions for use
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const cartItems = pgTable("cart_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id),
+  medicineId: varchar("medicine_id").references(() => medicines.id),
+  quantity: integer("quantity").notNull().default(1),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const orders = pgTable("orders", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id),
+  totalAmount: real("total_amount").notNull(),
+  status: text("status").default("pending"), // pending, confirmed, shipped, delivered
+  deliveryAddress: text("delivery_address"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const orderItems = pgTable("order_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  orderId: varchar("order_id").references(() => orders.id),
+  medicineId: varchar("medicine_id").references(() => medicines.id),
+  quantity: integer("quantity").notNull(),
+  price: real("price").notNull(), // price at time of order
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   email: true,
@@ -137,6 +179,26 @@ export const insertApiKeySchema = createInsertSchema(apiKeys).omit({
   updatedAt: true,
 });
 
+export const insertMedicineSchema = createInsertSchema(medicines).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertCartItemSchema = createInsertSchema(cartItems).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertOrderSchema = createInsertSchema(orders).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type CropRecommendation = typeof cropRecommendations.$inferSelect;
@@ -153,3 +215,11 @@ export type CommunityPost = typeof communityPosts.$inferSelect;
 export type InsertCommunityPost = z.infer<typeof insertCommunityPostSchema>;
 export type ApiKey = typeof apiKeys.$inferSelect;
 export type InsertApiKey = z.infer<typeof insertApiKeySchema>;
+export type Medicine = typeof medicines.$inferSelect;
+export type InsertMedicine = z.infer<typeof insertMedicineSchema>;
+export type CartItem = typeof cartItems.$inferSelect;
+export type InsertCartItem = z.infer<typeof insertCartItemSchema>;
+export type Order = typeof orders.$inferSelect;
+export type InsertOrder = z.infer<typeof insertOrderSchema>;
+export type OrderItem = typeof orderItems.$inferSelect;
+export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;

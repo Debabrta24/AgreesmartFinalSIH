@@ -16,7 +16,11 @@ import {
   insertPestDetectionSchema,
   insertIotSensorDataSchema,
   insertCommunityPostSchema,
-  insertApiKeySchema
+  insertApiKeySchema,
+  insertMedicineSchema,
+  insertCartItemSchema,
+  insertOrderSchema,
+  insertOrderItemSchema
 } from "@shared/schema";
 
 // Helper function to get coordinates from location
@@ -553,6 +557,218 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "API key deleted successfully" });
     } catch (error) {
       res.status(500).json({ message: "Failed to delete API key" });
+    }
+  });
+
+  // Helper function for demo user
+  const getCurrentUserId = () => "demo-user-123";
+
+  // Medicine API routes
+  app.get("/api/medicines", async (req, res) => {
+    try {
+      const medicines = await storage.getMedicines();
+      res.json(medicines);
+    } catch (error) {
+      console.error("Fetch medicines error:", error);
+      res.status(500).json({ message: "Failed to fetch medicines" });
+    }
+  });
+
+  app.get("/api/medicines/:id", async (req, res) => {
+    try {
+      const medicine = await storage.getMedicine(req.params.id);
+      if (!medicine) {
+        return res.status(404).json({ message: "Medicine not found" });
+      }
+      res.json(medicine);
+    } catch (error) {
+      console.error("Fetch medicine error:", error);
+      res.status(500).json({ message: "Failed to fetch medicine" });
+    }
+  });
+
+  app.get("/api/medicines/category/:category", async (req, res) => {
+    try {
+      const medicines = await storage.getMedicinesByCategory(req.params.category);
+      res.json(medicines);
+    } catch (error) {
+      console.error("Fetch medicines by category error:", error);
+      res.status(500).json({ message: "Failed to fetch medicines by category" });
+    }
+  });
+
+  app.get("/api/medicines/pest/:pestTarget", async (req, res) => {
+    try {
+      const medicines = await storage.getMedicinesByPestTarget(req.params.pestTarget);
+      res.json(medicines);
+    } catch (error) {
+      console.error("Fetch medicines by pest target error:", error);
+      res.status(500).json({ message: "Failed to fetch medicines by pest target" });
+    }
+  });
+
+  app.post("/api/medicines", async (req, res) => {
+    try {
+      const medicineData = insertMedicineSchema.parse(req.body);
+      const medicine = await storage.createMedicine(medicineData);
+      res.status(201).json(medicine);
+    } catch (error) {
+      console.error("Create medicine error:", error);
+      res.status(400).json({ message: "Invalid medicine data" });
+    }
+  });
+
+  // Cart API routes
+  app.get("/api/cart", async (req, res) => {
+    try {
+      const userId = getCurrentUserId();
+      const cartItems = await storage.getCartItems(userId);
+      
+      // Fetch medicine details for each cart item
+      const cartItemsWithMedicines = await Promise.all(
+        cartItems.map(async (item) => {
+          const medicine = await storage.getMedicine(item.medicineId!);
+          return {
+            ...item,
+            medicine
+          };
+        })
+      );
+      
+      res.json(cartItemsWithMedicines);
+    } catch (error) {
+      console.error("Fetch cart error:", error);
+      res.status(500).json({ message: "Failed to fetch cart items" });
+    }
+  });
+
+  app.post("/api/cart/add", async (req, res) => {
+    try {
+      const userId = getCurrentUserId();
+      const cartData = insertCartItemSchema.parse({
+        ...req.body,
+        userId
+      });
+      const cartItem = await storage.addToCart(cartData);
+      res.status(201).json(cartItem);
+    } catch (error) {
+      console.error("Add to cart error:", error);
+      res.status(400).json({ message: "Failed to add item to cart" });
+    }
+  });
+
+  app.put("/api/cart/:id", async (req, res) => {
+    try {
+      const { quantity } = req.body;
+      if (typeof quantity !== 'number' || quantity < 0) {
+        return res.status(400).json({ message: "Invalid quantity" });
+      }
+      
+      const cartItem = await storage.updateCartItem(req.params.id, quantity);
+      if (!cartItem) {
+        return res.status(404).json({ message: "Cart item not found" });
+      }
+      
+      res.json(cartItem);
+    } catch (error) {
+      console.error("Update cart error:", error);
+      res.status(500).json({ message: "Failed to update cart item" });
+    }
+  });
+
+  app.delete("/api/cart/:id", async (req, res) => {
+    try {
+      const success = await storage.removeFromCart(req.params.id);
+      if (!success) {
+        return res.status(404).json({ message: "Cart item not found" });
+      }
+      
+      res.json({ message: "Item removed from cart successfully" });
+    } catch (error) {
+      console.error("Remove from cart error:", error);
+      res.status(500).json({ message: "Failed to remove item from cart" });
+    }
+  });
+
+  app.delete("/api/cart", async (req, res) => {
+    try {
+      const userId = getCurrentUserId();
+      const success = await storage.clearCart(userId);
+      res.json({ message: "Cart cleared successfully" });
+    } catch (error) {
+      console.error("Clear cart error:", error);
+      res.status(500).json({ message: "Failed to clear cart" });
+    }
+  });
+
+  // Order API routes
+  app.get("/api/orders", async (req, res) => {
+    try {
+      const userId = getCurrentUserId();
+      const orders = await storage.getOrders(userId);
+      res.json(orders);
+    } catch (error) {
+      console.error("Fetch orders error:", error);
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  app.post("/api/orders", async (req, res) => {
+    try {
+      const userId = getCurrentUserId();
+      const orderData = insertOrderSchema.parse({
+        ...req.body,
+        userId
+      });
+      
+      // Create the order
+      const order = await storage.createOrder(orderData);
+      
+      // Get cart items to create order items
+      const cartItems = await storage.getCartItems(userId);
+      
+      // Create order items from cart items
+      for (const cartItem of cartItems) {
+        const medicine = await storage.getMedicine(cartItem.medicineId!);
+        if (medicine) {
+          await storage.createOrderItem({
+            orderId: order.id,
+            medicineId: cartItem.medicineId!,
+            quantity: cartItem.quantity,
+            price: medicine.price
+          });
+        }
+      }
+      
+      // Clear the cart after creating order
+      await storage.clearCart(userId);
+      
+      res.status(201).json(order);
+    } catch (error) {
+      console.error("Create order error:", error);
+      res.status(400).json({ message: "Failed to create order" });
+    }
+  });
+
+  app.get("/api/orders/:id/items", async (req, res) => {
+    try {
+      const orderItems = await storage.getOrderItems(req.params.id);
+      
+      // Fetch medicine details for each order item
+      const orderItemsWithMedicines = await Promise.all(
+        orderItems.map(async (item) => {
+          const medicine = await storage.getMedicine(item.medicineId!);
+          return {
+            ...item,
+            medicine
+          };
+        })
+      );
+      
+      res.json(orderItemsWithMedicines);
+    } catch (error) {
+      console.error("Fetch order items error:", error);
+      res.status(500).json({ message: "Failed to fetch order items" });
     }
   });
 
