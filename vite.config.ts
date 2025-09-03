@@ -16,6 +16,7 @@ export default defineConfig({
         ]
       : []),
   ],
+  base:process.env.VITE_BASE_PATH || "/AgreeGrow",
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),
@@ -34,4 +35,5 @@ export default defineConfig({
       deny: ["**/.*"],
     },
   },
+
 });
