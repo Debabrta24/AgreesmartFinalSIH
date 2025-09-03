@@ -1,0 +1,1451 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgreeGrow - Smart Farming Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    popover: {
+                        DEFAULT: "var(--popover)",
+                        foreground: "var(--popover-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                },
+                fontFamily: {
+                    sans: ["Inter", "system-ui", "sans-serif"],
+                    serif: ["Poppins", "serif"],
+                }
+            },
+        }
+    };
+    </script>
+    <style>
+        :root {
+            --background: hsl(120 20% 95%);
+            --foreground: hsl(120 15% 15%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(120 15% 15%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(120 15% 15%);
+            --primary: hsl(120 40% 35%);
+            --primary-foreground: hsl(0 0% 98%);
+            --secondary: hsl(45 80% 50%);
+            --secondary-foreground: hsl(120 15% 15%);
+            --muted: hsl(120 10% 70%);
+            --muted-foreground: hsl(120 8% 45%);
+            --accent: hsl(25 70% 45%);
+            --accent-foreground: hsl(0 0% 98%);
+            --destructive: hsl(0 84% 60%);
+            --destructive-foreground: hsl(0 0% 98%);
+            --border: hsl(120 20% 82%);
+            --input: hsl(120 20% 82%);
+            --ring: hsl(120 40% 35%);
+            --radius: 0.5rem;
+            --font-sans: 'Inter', system-ui, sans-serif;
+            --font-serif: 'Poppins', serif;
+        }
+        
+        .dark {
+            --background: hsl(120 15% 8%);
+            --foreground: hsl(120 10% 90%);
+            --card: hsl(120 15% 12%);
+            --card-foreground: hsl(120 10% 90%);
+            --popover: hsl(120 15% 12%);
+            --popover-foreground: hsl(120 10% 90%);
+            --primary: hsl(120 40% 45%);
+            --primary-foreground: hsl(120 15% 8%);
+            --secondary: hsl(45 60% 35%);
+            --secondary-foreground: hsl(120 10% 90%);
+            --muted: hsl(120 10% 25%);
+            --muted-foreground: hsl(120 8% 65%);
+            --accent: hsl(25 60% 35%);
+            --accent-foreground: hsl(120 10% 90%);
+            --destructive: hsl(0 62% 50%);
+            --destructive-foreground: hsl(0 0% 98%);
+            --border: hsl(120 15% 18%);
+            --input: hsl(120 15% 18%);
+            --ring: hsl(120 40% 45%);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, hsl(120 40% 35%) 0%, hsl(120 35% 25%) 100%);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
+        }
+
+        .plant-animation {
+            animation: sway 3s ease-in-out infinite;
+        }
+
+        @keyframes sway {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(2deg); }
+        }
+
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/heroicons@2.0.18/24/outline/index.js"></script>
+</head>
+<body class="bg-background text-foreground min-h-screen">
+    <!-- @COMPONENT: Navigation [responsive navigation with language selector] -->
+    <nav class="bg-card border-b border-border sticky top-0 z-50 backdrop-blur-sm bg-card/80">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="font-serif font-bold text-xl text-primary">AgreeGrow</h1>
+                        <p class="text-xs text-muted-foreground">Smart Farming. Smarter Future.</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" data-nav="home" class="nav-link text-foreground hover:text-primary transition-colors duration-200 font-medium">Home</a>
+                    <a href="#project" data-nav="project" class="nav-link text-muted-foreground hover:text-primary transition-colors duration-200">Project Idea</a>
+                    <a href="#about" data-nav="about" class="nav-link text-muted-foreground hover:text-primary transition-colors duration-200">About Us</a>
+                    <a href="#tools" data-nav="tools" class="nav-link text-muted-foreground hover:text-primary transition-colors duration-200">Smart Tools</a>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <!-- Language Selector -->
+                    <div class="relative">
+                        <select id="languageSelect" class="bg-card border border-border rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+                            <option value="en">English</option>
+                            <option value="hi">हिंदी</option>
+                            <option value="bn">বাংলা</option>
+                            <option value="ta">தமிழ்</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button id="mobileMenuBtn" class="md:hidden p-2 rounded-md hover:bg-muted">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <div id="mobileMenu" class="md:hidden hidden border-t border-border">
+                <div class="px-2 pt-2 pb-3 space-y-1">
+                    <a href="#home" class="block px-3 py-2 text-foreground hover:text-primary hover:bg-muted rounded-md">Home</a>
+                    <a href="#project" class="block px-3 py-2 text-muted-foreground hover:text-primary hover:bg-muted rounded-md">Project Idea</a>
+                    <a href="#about" class="block px-3 py-2 text-muted-foreground hover:text-primary hover:bg-muted rounded-md">About Us</a>
+                    <a href="#tools" class="block px-3 py-2 text-muted-foreground hover:text-primary hover:bg-muted rounded-md">Smart Tools</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: Navigation -->
+
+    <!-- @COMPONENT: LoginModal [fake login system for demo access] -->
+    <div id="loginModal" class="fixed inset-0 bg-black/50 modal-backdrop flex items-center justify-center z-50">
+        <div class="bg-card rounded-lg shadow-xl p-8 max-w-md w-full mx-4">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-serif font-bold text-card-foreground">Welcome to AgreeGrow</h2>
+                <p class="text-muted-foreground mt-2">Enter any email to access the platform</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-card-foreground mb-2">Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="farmer@example.com" 
+                           class="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring" required>
+                </div>
+                <button type="submit" class="w-full bg-primary text-primary-foreground py-2 rounded-md hover:bg-primary/90 transition-colors font-medium">
+                    Access Platform
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: LoginModal -->
+
+    <!-- @COMPONENT: LocationModal [location detection with manual fallback] -->
+    <div id="locationModal" class="fixed inset-0 bg-black/50 modal-backdrop flex items-center justify-center z-50 hidden">
+        <div class="bg-card rounded-lg shadow-xl p-8 max-w-md w-full mx-4">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-accent-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-serif font-bold text-card-foreground">Farm Location</h2>
+                <p class="text-muted-foreground mt-2">Help us provide location-specific insights</p>
+            </div>
+            
+            <div class="space-y-4">
+                <button id="autoLocationBtn" class="w-full bg-primary text-primary-foreground py-3 rounded-md hover:bg-primary/90 transition-colors font-medium">
+                    📍 Detect Location Automatically
+                </button>
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-border"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="bg-card px-2 text-muted-foreground">or</span>
+                    </div>
+                </div>
+                <input type="text" id="manualLocation" placeholder="Enter your location manually" 
+                       class="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                <button id="manualLocationBtn" class="w-full bg-secondary text-secondary-foreground py-2 rounded-md hover:bg-secondary/90 transition-colors font-medium">
+                    Continue with Manual Location
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: LocationModal -->
+
+    <!-- @COMPONENT: MainContent [main application interface] -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- @COMPONENT: DashboardHeader [welcome section with user info] -->
+        <section id="home" class="mb-12">
+            <div class="gradient-bg rounded-2xl p-8 text-primary-foreground mb-8">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div class="text-center md:text-left mb-6 md:mb-0">
+                        <h1 class="text-4xl md:text-5xl font-serif font-bold mb-2">Welcome to AgreeGrow</h1>
+                        <p class="text-xl mb-4 opacity-90">Smart Farming. Smarter Future.</p>
+                        <div class="flex items-center justify-center md:justify-start space-x-2 text-sm opacity-80">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            </svg>
+                            <span data-bind="user.location" data-mock="true">Punjab, India</span>
+                        </div>
+                    </div>
+                    <div class="plant-animation">
+                        <svg class="w-32 h-32 text-primary-foreground opacity-20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-card rounded-lg p-6 shadow-sm border border-border card-hover">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Today's Weather</p>
+                            <p class="text-2xl font-bold text-card-foreground" data-bind="weather.temperature" data-mock="true">28°C</p>
+                        </div>
+                        <div class="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-card rounded-lg p-6 shadow-sm border border-border card-hover">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Soil Moisture</p>
+                            <p class="text-2xl font-bold text-card-foreground" data-bind="sensors.soilMoisture" data-mock="true">75%</p>
+                        </div>
+                        <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-card rounded-lg p-6 shadow-sm border border-border card-hover">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Market Price</p>
+                            <p class="text-2xl font-bold text-card-foreground" data-bind="market.wheatPrice" data-mock="true">₹2,180/qt</p>
+                        </div>
+                        <div class="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-card rounded-lg p-6 shadow-sm border border-border card-hover">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-muted-foreground">Yield Prediction</p>
+                            <p class="text-2xl font-bold text-card-foreground" data-bind="predictions.yield" data-mock="true">+12%</p>
+                        </div>
+                        <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: DashboardHeader -->
+
+        <!-- @COMPONENT: SmartTools [main feature showcase] -->
+        <section id="tools" class="mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-serif font-bold text-foreground mb-2">Smart Farming Tools</h2>
+                <p class="text-muted-foreground">AI-powered solutions for modern agriculture</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Crop Analysis Tool -->
+                <div class="bg-card rounded-xl p-6 shadow-lg border border-border card-hover">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-card-foreground">Crop Analysis</h3>
+                    </div>
+                    <p class="text-muted-foreground mb-4">Get AI-powered crop recommendations based on soil and weather conditions.</p>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">Recommended Crop:</span>
+                            <span class="font-medium text-card-foreground" data-bind="analysis.recommendedCrop" data-mock="true">Wheat</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">Success Rate:</span>
+                            <span class="font-medium text-primary">92%</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">Expected Yield:</span>
+                            <span class="font-medium text-card-foreground">45 quintals/acre</span>
+                        </div>
+                    </div>
+                    
+                    <button data-tool="crop-analysis" class="w-full bg-primary text-primary-foreground py-2 rounded-md hover:bg-primary/90 transition-colors font-medium">
+                        Analyze My Farm
+                    </button>
+                </div>
+
+                <!-- Pest Detection Tool -->
+                <div class="bg-card rounded-xl p-6 shadow-lg border border-border card-hover">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-destructive/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-card-foreground">Pest Doctor</h3>
+                    </div>
+                    <p class="text-muted-foreground mb-4">Identify pests and diseases using AI image recognition.</p>
+                    
+                    <div class="border-2 border-dashed border-border rounded-lg p-4 text-center mb-4">
+                        <svg class="w-8 h-8 text-muted-foreground mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <p class="text-sm text-muted-foreground">Upload or capture plant image</p>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <button data-action="camera" class="flex-1 bg-accent text-accent-foreground py-2 rounded-md hover:bg-accent/90 transition-colors text-sm font-medium">
+                            📷 Camera
+                        </button>
+                        <button data-action="upload" class="flex-1 bg-secondary text-secondary-foreground py-2 rounded-md hover:bg-secondary/90 transition-colors text-sm font-medium">
+                            📁 Upload
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Market Intelligence -->
+                <div class="bg-card rounded-xl p-6 shadow-lg border border-border card-hover">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-card-foreground">Market Intel</h3>
+                    </div>
+                    <p class="text-muted-foreground mb-4">Real-time market prices and selling predictions.</p>
+                    
+                    <div class="space-y-3">
+                        <!-- @MAP: marketData.map(item => ( -->
+                        <div class="flex justify-between items-center py-2 border-b border-border last:border-b-0">
+                            <div>
+                                <p class="font-medium text-card-foreground" data-mock="true">Wheat</p>
+                                <p class="text-xs text-muted-foreground">per quintal</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-primary" data-mock="true">₹2,180</p>
+                                <p class="text-xs text-accent">+5.2% ↗</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-border last:border-b-0">
+                            <div>
+                                <p class="font-medium text-card-foreground" data-mock="true">Rice</p>
+                                <p class="text-xs text-muted-foreground">per quintal</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-primary" data-mock="true">₹2,850</p>
+                                <p class="text-xs text-destructive">-2.1% ↘</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center py-2">
+                            <div>
+                                <p class="font-medium text-card-foreground" data-mock="true">Maize</p>
+                                <p class="text-xs text-muted-foreground">per quintal</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-primary" data-mock="true">₹1,920</p>
+                                <p class="text-xs text-accent">+3.8% ↗</p>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+
+                <!-- Weather Alerts -->
+                <div class="bg-card rounded-xl p-6 shadow-lg border border-border card-hover">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-secondary/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-card-foreground">Weather Shield</h3>
+                    </div>
+                    <p class="text-muted-foreground mb-4">Real-time weather alerts and farming recommendations.</p>
+                    
+                    <div class="space-y-3">
+                        <div class="bg-secondary/10 border border-secondary/20 rounded-lg p-3">
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <p class="text-sm font-medium text-secondary">Good time to irrigate</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-muted-foreground">Humidity:</span>
+                                <span class="text-card-foreground" data-mock="true">68%</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-muted-foreground">UV Index:</span>
+                                <span class="text-card-foreground" data-mock="true">6 (High)</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-muted-foreground">Wind Speed:</span>
+                                <span class="text-card-foreground" data-mock="true">12 km/h</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IoT Dashboard -->
+                <div class="bg-card rounded-xl p-6 shadow-lg border border-border card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-card-foreground">IoT Dashboard</h3>
+                        </div>
+                        <div class="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
+                    </div>
+                    <p class="text-muted-foreground mb-4">Live sensor data from your farm.</p>
+                    
+                    <button id="addIoTDataBtn" class="w-full bg-accent text-accent-foreground py-2 rounded-md hover:bg-accent/90 transition-colors font-medium mb-4">
+                        + Add IoT Sensor Data
+                    </button>
+                    
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">Temperature:</span>
+                            <span class="text-card-foreground" data-bind="iot.temperature" data-mock="true">28.5°C</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">Light Intensity:</span>
+                            <span class="text-card-foreground" data-bind="iot.light" data-mock="true">850 lux</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">pH Level:</span>
+                            <span class="text-card-foreground" data-bind="iot.ph" data-mock="true">6.8</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profit Calculator -->
+                <div class="bg-card rounded-xl p-6 shadow-lg border border-border card-hover">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-card-foreground">Profit Calculator</h3>
+                    </div>
+                    <p class="text-muted-foreground mb-4">Calculate expected profits and ROI for your crops.</p>
+                    
+                    <div class="space-y-3 mb-4">
+                        <div class="bg-accent/10 rounded-lg p-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-accent font-medium">Expected Profit</span>
+                                <span class="text-lg font-bold text-accent" data-bind="profit.expected" data-mock="true">₹45,000</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">Investment:</span>
+                            <span class="text-card-foreground" data-mock="true">₹25,000</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-muted-foreground">ROI:</span>
+                            <span class="text-primary font-medium">180%</span>
+                        </div>
+                    </div>
+                    
+                    <button data-tool="profit-calculator" class="w-full bg-accent text-accent-foreground py-2 rounded-md hover:bg-accent/90 transition-colors font-medium">
+                        Calculate Profits
+                    </button>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: SmartTools -->
+
+        <!-- @COMPONENT: CropRecommendations [detailed crop analysis section] -->
+        <section class="mb-12">
+            <div class="bg-card rounded-xl shadow-lg border border-border overflow-hidden">
+                <div class="bg-primary text-primary-foreground p-6">
+                    <h2 class="text-2xl font-serif font-bold mb-2">Crop Recommendations</h2>
+                    <p class="opacity-90">AI-powered suggestions based on your farm conditions</p>
+                </div>
+                
+                <div class="p-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2">
+                            <h3 class="text-lg font-semibold text-card-foreground mb-4">Recommended Crops for This Season</h3>
+                            <div class="space-y-4">
+                                <!-- @MAP: recommendations.map(crop => ( -->
+                                <div class="flex items-center space-x-4 p-4 bg-muted/30 rounded-lg">
+                                    <!-- High quality crop image showing healthy wheat plants in golden sunlight -->
+                                    <img src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100" 
+                                         alt="Wheat crop in field" class="w-16 h-16 rounded-lg object-cover" data-mock-image="true">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-card-foreground" data-mock="true">Wheat</h4>
+                                        <p class="text-sm text-muted-foreground">Best planting time: November - December</p>
+                                        <div class="flex items-center space-x-4 mt-2">
+                                            <span class="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">95% Success Rate</span>
+                                            <span class="text-xs bg-accent/20 text-accent px-2 py-1 rounded-full">High Profit</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-bold text-primary" data-mock="true">₹2,180</p>
+                                        <p class="text-xs text-muted-foreground">per quintal</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center space-x-4 p-4 bg-muted/30 rounded-lg">
+                                    <!-- Lush green mustard field with yellow flowers in bloom -->
+                                    <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100" 
+                                         alt="Mustard crop field" class="w-16 h-16 rounded-lg object-cover" data-mock-image="true">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-card-foreground" data-mock="true">Mustard</h4>
+                                        <p class="text-sm text-muted-foreground">Best planting time: October - November</p>
+                                        <div class="flex items-center space-x-4 mt-2">
+                                            <span class="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">88% Success Rate</span>
+                                            <span class="text-xs bg-secondary/20 text-secondary px-2 py-1 rounded-full">Medium Profit</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-bold text-primary" data-mock="true">₹6,500</p>
+                                        <p class="text-xs text-muted-foreground">per quintal</p>
+                                    </div>
+                                </div>
+                                <!-- @END_MAP )) -->
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-card-foreground mb-4">Fertilizer Recommendations</h3>
+                            <div class="space-y-3">
+                                <div class="bg-primary/10 border border-primary/20 rounded-lg p-4">
+                                    <h4 class="font-medium text-primary mb-2">Organic NPK Mix</h4>
+                                    <p class="text-sm text-muted-foreground mb-2">Recommended for wheat cultivation</p>
+                                    <div class="text-xs text-primary">
+                                        Application: 50kg per acre
+                                    </div>
+                                </div>
+                                <div class="bg-accent/10 border border-accent/20 rounded-lg p-4">
+                                    <h4 class="font-medium text-accent mb-2">Ayurvedic Pest Control</h4>
+                                    <p class="text-sm text-muted-foreground mb-2">Neem-based organic solution</p>
+                                    <div class="text-xs text-accent">
+                                        Application: Weekly spray
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: CropRecommendations -->
+
+        <!-- @COMPONENT: DigitalTwin [3D plant visualization section] -->
+        <section class="mb-12">
+            <div class="bg-card rounded-xl shadow-lg border border-border overflow-hidden">
+                <div class="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground p-6">
+                    <h2 class="text-2xl font-serif font-bold mb-2">Digital Twin - Plant Health Monitor</h2>
+                    <p class="opacity-90">Virtual representation of your crop health in real-time</p>
+                </div>
+                
+                <div class="p-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <div class="bg-gradient-to-b from-secondary/20 to-primary/20 rounded-xl p-8 text-center min-h-80 flex items-center justify-center">
+                                <!-- @FUNCTIONALITY: This should implement 3D plant model using Three.js or similar -->
+                                <div class="plant-animation">
+                                    <svg class="w-48 h-48 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z"/>
+                                    </svg>
+                                </div>
+                                <div class="absolute inset-0 pointer-events-none">
+                                    <div class="absolute top-1/4 left-1/4 w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                                    <div class="absolute top-1/3 right-1/3 w-2 h-2 bg-accent rounded-full animate-pulse" style="animation-delay: 0.5s;"></div>
+                                    <div class="absolute bottom-1/3 left-1/2 w-2 h-2 bg-secondary rounded-full animate-pulse" style="animation-delay: 1s;"></div>
+                                </div>
+                            </div>
+                            <p class="text-center text-muted-foreground mt-4">3D Model reflects real soil and plant conditions</p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-card-foreground mb-4">Health Indicators</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center space-x-3 p-3 bg-primary/10 rounded-lg">
+                                    <div class="w-3 h-3 bg-primary rounded-full"></div>
+                                    <div class="flex-1">
+                                        <p class="font-medium text-card-foreground">Nitrogen Level</p>
+                                        <div class="w-full bg-muted rounded-full h-2 mt-1">
+                                            <div class="bg-primary h-2 rounded-full w-4/5"></div>
+                                        </div>
+                                    </div>
+                                    <span class="text-sm font-medium text-primary">80%</span>
+                                </div>
+                                
+                                <div class="flex items-center space-x-3 p-3 bg-secondary/10 rounded-lg">
+                                    <div class="w-3 h-3 bg-secondary rounded-full"></div>
+                                    <div class="flex-1">
+                                        <p class="font-medium text-card-foreground">Phosphorus</p>
+                                        <div class="w-full bg-muted rounded-full h-2 mt-1">
+                                            <div class="bg-secondary h-2 rounded-full w-3/5"></div>
+                                        </div>
+                                    </div>
+                                    <span class="text-sm font-medium text-secondary">60%</span>
+                                </div>
+                                
+                                <div class="flex items-center space-x-3 p-3 bg-accent/10 rounded-lg">
+                                    <div class="w-3 h-3 bg-accent rounded-full"></div>
+                                    <div class="flex-1">
+                                        <p class="font-medium text-card-foreground">Potassium</p>
+                                        <div class="w-full bg-muted rounded-full h-2 mt-1">
+                                            <div class="bg-accent h-2 rounded-full w-full"></div>
+                                        </div>
+                                    </div>
+                                    <span class="text-sm font-medium text-accent">95%</span>
+                                </div>
+
+                                <div class="bg-muted/30 rounded-lg p-4 mt-4">
+                                    <h4 class="font-medium text-card-foreground mb-2">AI Recommendation</h4>
+                                    <p class="text-sm text-muted-foreground" data-bind="ai.recommendation" data-mock="true">
+                                        Increase phosphorus levels with organic compost. Current conditions are excellent for wheat growth.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: DigitalTwin -->
+
+        <!-- @COMPONENT: CommunityForum [farmer interaction platform] -->
+        <section class="mb-12">
+            <div class="bg-card rounded-xl shadow-lg border border-border">
+                <div class="border-b border-border p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-serif font-bold text-card-foreground">Community Forum</h2>
+                            <p class="text-muted-foreground">Connect with fellow farmers, share tips and experiences</p>
+                        </div>
+                        <button class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors font-medium">
+                            + New Post
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <div class="space-y-6">
+                        <!-- @MAP: forumPosts.map(post => ( -->
+                        <div class="flex space-x-4 p-4 bg-muted/20 rounded-lg">
+                            <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
+                                <span class="text-primary-foreground font-medium" data-mock="true">RK</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <h4 class="font-medium text-card-foreground" data-mock="true">Rajesh Kumar</h4>
+                                    <span class="text-xs text-muted-foreground">• 2 hours ago</span>
+                                    <span class="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">Wheat Farmer</span>
+                                </div>
+                                <p class="text-card-foreground mb-3" data-mock="true">
+                                    Has anyone tried organic pest control for aphids? Looking for natural alternatives to chemical pesticides.
+                                </p>
+                                <div class="flex items-center space-x-4 text-sm text-muted-foreground">
+                                    <button class="hover:text-primary transition-colors">👍 12 likes</button>
+                                    <button class="hover:text-primary transition-colors">💬 5 replies</button>
+                                    <button class="hover:text-primary transition-colors">🔗 Share</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex space-x-4 p-4 bg-muted/20 rounded-lg">
+                            <div class="w-12 h-12 bg-accent rounded-full flex items-center justify-center">
+                                <span class="text-accent-foreground font-medium" data-mock="true">MS</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <h4 class="font-medium text-card-foreground" data-mock="true">Meera Singh</h4>
+                                    <span class="text-xs text-muted-foreground">• 5 hours ago</span>
+                                    <span class="text-xs bg-accent/20 text-accent px-2 py-1 rounded-full">Rice Farmer</span>
+                                </div>
+                                <p class="text-card-foreground mb-3" data-mock="true">
+                                    Great rice harvest this season! Used the AgreeGrow recommendations for fertilizer timing. 20% increase in yield! 🌾
+                                </p>
+                                <div class="flex items-center space-x-4 text-sm text-muted-foreground">
+                                    <button class="hover:text-primary transition-colors">👍 24 likes</button>
+                                    <button class="hover:text-primary transition-colors">💬 8 replies</button>
+                                    <button class="hover:text-primary transition-colors">🔗 Share</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: CommunityForum -->
+
+        <!-- @COMPONENT: ProjectIdea [about the technology] -->
+        <section id="project" class="mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-serif font-bold text-foreground mb-2">Project Innovation</h2>
+                <p class="text-muted-foreground">How AgreeGrow revolutionizes farming with AI and IoT</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-card rounded-xl shadow-lg border border-border p-8">
+                    <h3 class="text-xl font-semibold text-card-foreground mb-4">Data Flow Architecture</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-3 p-3 bg-primary/10 rounded-lg">
+                            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold">1</div>
+                            <p class="text-card-foreground">IoT Sensors + Weather APIs collect real-time data</p>
+                        </div>
+                        <div class="flex items-center space-x-3 p-3 bg-accent/10 rounded-lg">
+                            <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground text-sm font-bold">2</div>
+                            <p class="text-card-foreground">AgreeGrow AI processes and analyzes the information</p>
+                        </div>
+                        <div class="flex items-center space-x-3 p-3 bg-secondary/10 rounded-lg">
+                            <div class="w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground text-sm font-bold">3</div>
+                            <p class="text-card-foreground">Gemini API provides backup insights if primary APIs fail</p>
+                        </div>
+                        <div class="flex items-center space-x-3 p-3 bg-primary/10 rounded-lg">
+                            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold">4</div>
+                            <p class="text-card-foreground">Farmers receive actionable recommendations & alerts</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-card rounded-xl shadow-lg border border-border p-8">
+                    <h3 class="text-xl font-semibold text-card-foreground mb-4">Key Innovations</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-6 h-6 bg-primary rounded-full flex items-center justify-center mt-1">
+                                <svg class="w-3 h-3 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-card-foreground">Never-Fail AI System</h4>
+                                <p class="text-sm text-muted-foreground">Gemini API ensures continuous service even when primary APIs are down</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="w-6 h-6 bg-accent rounded-full flex items-center justify-center mt-1">
+                                <svg class="w-3 h-3 text-accent-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-card-foreground">AR Farming Assistant</h4>
+                                <p class="text-sm text-muted-foreground">Camera-based overlay guidance for optimal farming practices</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="w-6 h-6 bg-secondary rounded-full flex items-center justify-center mt-1">
+                                <svg class="w-3 h-3 text-secondary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-card-foreground">Sustainability Index</h4>
+                                <p class="text-sm text-muted-foreground">Track environmental impact and get eco-friendly farming suggestions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: ProjectIdea -->
+
+        <!-- @COMPONENT: AboutUs [mission and vision] -->
+        <section id="about" class="mb-12">
+            <div class="bg-card rounded-xl shadow-lg border border-border">
+                <div class="p-8">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-serif font-bold text-foreground mb-2">About AgreeGrow</h2>
+                        <p class="text-muted-foreground">Revolutionizing agriculture through technology</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="text-center">
+                            <div class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-card-foreground mb-3">Our Mission</h3>
+                            <p class="text-muted-foreground">Use AI and IoT technology to make farming simple, profitable, and sustainable for farmers across India.</p>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="w-20 h-20 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-10 h-10 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-card-foreground mb-3">Our Vision</h3>
+                            <p class="text-muted-foreground">Build a sustainable farming ecosystem with real-time technology that empowers every farmer to succeed.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 p-6 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg">
+                        <h4 class="font-semibold text-card-foreground mb-3">Technology Stack</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div class="text-center">
+                                <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-primary font-bold">AI</span>
+                                </div>
+                                <p class="text-muted-foreground">Gemini API</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-accent font-bold">IoT</span>
+                                </div>
+                                <p class="text-muted-foreground">ESP32 Sensors</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-12 h-12 bg-secondary/20 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-secondary font-bold">AR</span>
+                                </div>
+                                <p class="text-muted-foreground">Farm Assistant</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-primary font-bold">3D</span>
+                                </div>
+                                <p class="text-muted-foreground">Digital Twin</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: AboutUs -->
+
+        <!-- @COMPONENT: SustainabilityIndex [environmental impact tracking] -->
+        <section class="mb-12">
+            <div class="bg-card rounded-xl shadow-lg border border-border p-8">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-serif font-bold text-card-foreground mb-2">Sustainability Index</h2>
+                    <p class="text-muted-foreground">Track your environmental impact and get eco-friendly suggestions</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 relative">
+                            <svg class="w-12 h-12 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                            </svg>
+                            <div class="absolute -top-2 -right-2 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                <span class="text-primary-foreground text-sm font-bold" data-mock="true">85</span>
+                            </div>
+                        </div>
+                        <h3 class="font-semibold text-card-foreground">Water Efficiency</h3>
+                        <p class="text-muted-foreground text-sm">Optimal irrigation usage</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4 relative">
+                            <svg class="w-12 h-12 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <div class="absolute -top-2 -right-2 w-8 h-8 bg-accent rounded-full flex items-center justify-center">
+                                <span class="text-accent-foreground text-sm font-bold" data-mock="true">92</span>
+                            </div>
+                        </div>
+                        <h3 class="font-semibold text-card-foreground">Carbon Footprint</h3>
+                        <p class="text-muted-foreground text-sm">Reduced environmental impact</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-secondary/20 rounded-full flex items-center justify-center mx-auto mb-4 relative">
+                            <svg class="w-12 h-12 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div class="absolute -top-2 -right-2 w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                                <span class="text-secondary-foreground text-sm font-bold" data-mock="true">78</span>
+                            </div>
+                        </div>
+                        <h3 class="font-semibold text-card-foreground">Organic Score</h3>
+                        <p class="text-muted-foreground text-sm">Chemical-free farming methods</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 p-4 bg-primary/10 rounded-lg">
+                    <h4 class="font-medium text-primary mb-2">💡 Sustainability Tip</h4>
+                    <p class="text-sm text-muted-foreground" data-bind="sustainability.tip" data-mock="true">
+                        Consider implementing drip irrigation to reduce water usage by 30% while maintaining crop yield. This season's weather pattern supports water conservation methods.
+                    </p>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: SustainabilityIndex -->
+
+    </main>
+    <!-- @END_COMPONENT: MainContent -->
+
+    <!-- @COMPONENT: IoTDataModal [IoT sensor data input simulation] -->
+    <div id="iotModal" class="fixed inset-0 bg-black/50 modal-backdrop flex items-center justify-center z-50 hidden">
+        <div class="bg-card rounded-lg shadow-xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl font-serif font-bold text-card-foreground">IoT Sensor Data</h2>
+                    <p class="text-muted-foreground">Connect your ESP32 sensors or input data manually</p>
+                </div>
+                <button id="closeIoTModal" class="p-2 hover:bg-muted rounded-md">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold text-card-foreground mb-4">Sensor Readings</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-card-foreground mb-2">Soil Moisture (%)</label>
+                            <input type="range" min="0" max="100" value="75" class="w-full" id="soilMoisture">
+                            <div class="flex justify-between text-xs text-muted-foreground mt-1">
+                                <span>0%</span>
+                                <span id="soilMoistureValue">75%</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-card-foreground mb-2">Temperature (°C)</label>
+                            <input type="range" min="10" max="50" value="28" class="w-full" id="temperature">
+                            <div class="flex justify-between text-xs text-muted-foreground mt-1">
+                                <span>10°C</span>
+                                <span id="temperatureValue">28°C</span>
+                                <span>50°C</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-card-foreground mb-2">Light Intensity (lux)</label>
+                            <input type="range" min="0" max="2000" value="850" class="w-full" id="lightIntensity">
+                            <div class="flex justify-between text-xs text-muted-foreground mt-1">
+                                <span>0</span>
+                                <span id="lightIntensityValue">850</span>
+                                <span>2000</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-card-foreground mb-2">pH Level</label>
+                            <input type="range" min="4" max="9" step="0.1" value="6.8" class="w-full" id="phLevel">
+                            <div class="flex justify-between text-xs text-muted-foreground mt-1">
+                                <span>4.0</span>
+                                <span id="phLevelValue">6.8</span>
+                                <span>9.0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-card-foreground mb-4">Live Visualization</h3>
+                    <div class="bg-muted/20 rounded-lg p-4 min-h-64 flex items-center justify-center">
+                        <!-- @FUNCTIONALITY: This should implement real-time charts using Chart.js or similar -->
+                        <div class="text-center">
+                            <svg class="w-24 h-24 text-primary mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                            <p class="text-muted-foreground">Real-time sensor data visualization</p>
+                            <p class="text-xs text-muted-foreground mt-1">Charts and graphs will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button class="flex-1 bg-primary text-primary-foreground py-3 rounded-md hover:bg-primary/90 transition-colors font-medium">
+                    Update Dashboard
+                </button>
+                <button class="flex-1 bg-secondary text-secondary-foreground py-3 rounded-md hover:bg-secondary/90 transition-colors font-medium">
+                    Save Configuration
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: IoTDataModal -->
+
+    <!-- @COMPONENT: ToolModal [detailed tool interfaces] -->
+    <div id="toolModal" class="fixed inset-0 bg-black/50 modal-backdrop flex items-center justify-center z-50 hidden">
+        <div class="bg-card rounded-lg shadow-xl p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h2 id="toolModalTitle" class="text-2xl font-serif font-bold text-card-foreground">Crop Analysis Tool</h2>
+                <button id="closeToolModal" class="p-2 hover:bg-muted rounded-md">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="toolModalContent">
+                <!-- Content will be dynamically loaded based on selected tool -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold text-card-foreground mb-4">Input Parameters</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-card-foreground mb-2">Farm Size (acres)</label>
+                                <input type="number" placeholder="Enter farm size" class="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-card-foreground mb-2">Current Crop</label>
+                                <select class="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                                    <option>Select crop type</option>
+                                    <option>Wheat</option>
+                                    <option>Rice</option>
+                                    <option>Maize</option>
+                                    <option>Mustard</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-card-foreground mb-2">Soil Type</label>
+                                <select class="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                                    <option>Select soil type</option>
+                                    <option>Clay</option>
+                                    <option>Sandy</option>
+                                    <option>Loamy</option>
+                                    <option>Silt</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold text-card-foreground mb-4">AI Analysis Results</h3>
+                        <div class="bg-primary/10 rounded-lg p-6">
+                            <div class="text-center mb-4">
+                                <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-2">
+                                    <svg class="w-8 h-8 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="font-semibold text-primary">Analysis Complete</h4>
+                            </div>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-muted-foreground">Recommended Action:</span>
+                                    <span class="font-medium text-card-foreground">Plant Wheat</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-muted-foreground">Success Probability:</span>
+                                    <span class="font-medium text-primary">92%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-muted-foreground">Expected Yield:</span>
+                                    <span class="font-medium text-card-foreground">45 quintals</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-muted-foreground">Investment Needed:</span>
+                                    <span class="font-medium text-card-foreground">₹25,000</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: ToolModal -->
+
+    <!-- @COMPONENT: Footer [app footer with additional links] -->
+    <footer class="bg-card border-t border-border">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-3 mb-4">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-serif font-bold text-xl text-primary">AgreeGrow</h3>
+                </div>
+                <p class="text-muted-foreground mb-4">Smart Farming. Smarter Future.</p>
+                <div class="flex flex-wrap justify-center space-x-6 text-sm text-muted-foreground">
+                    <a href="#" class="hover:text-primary transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-primary transition-colors">Terms of Service</a>
+                    <a href="#" class="hover:text-primary transition-colors">API Documentation</a>
+                    <a href="#" class="hover:text-primary transition-colors">Support</a>
+                </div>
+                <p class="text-xs text-muted-foreground mt-4">© 2024 AgreeGrow. Empowering farmers with technology.</p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <script>
+        // TODO: Implement business logic, API calls, and state management
+        (function() {
+            // @STATE: isLoggedIn:boolean = false
+            // @STATE: currentLanguage:string = 'en'
+            // @STATE: userLocation:string = ''
+            
+            let isLoggedIn = false;
+            let currentLanguage = 'en';
+            let userLocation = '';
+
+            // DOM Elements
+            const loginModal = document.getElementById('loginModal');
+            const locationModal = document.getElementById('locationModal');
+            const iotModal = document.getElementById('iotModal');
+            const toolModal = document.getElementById('toolModal');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            // Language translations (basic implementation)
+            const translations = {
+                en: {
+                    welcome: "Welcome to AgreeGrow",
+                    tagline: "Smart Farming. Smarter Future."
+                },
+                hi: {
+                    welcome: "AgreeGrow में आपका स्वागत है",
+                    tagline: "स्मार्ट खेती। स्मार्ट भविष्य।"
+                },
+                bn: {
+                    welcome: "AgreeGrow-এ আপনাকে স্বাগতম",
+                    tagline: "স্মার্ট কৃষি। স্মার্ত ভবিষ্যৎ।"
+                },
+                ta: {
+                    welcome: "AgreeGrow-க்கு வருக",
+                    tagline: "ஸ்மார்ட் விவசாயம். ஸ்மார்ட் எதிர்காலம்।"
+                }
+            };
+
+            // Initialize app
+            function initializeApp() {
+                setupEventListeners();
+                if (!isLoggedIn) {
+                    showLoginModal();
+                }
+            }
+
+            function setupEventListeners() {
+                // Login form
+                const loginForm = document.getElementById('loginForm');
+                if (loginForm) {
+                    loginForm.addEventListener('submit', handleLogin);
+                }
+
+                // Location detection
+                const autoLocationBtn = document.getElementById('autoLocationBtn');
+                const manualLocationBtn = document.getElementById('manualLocationBtn');
+                
+                if (autoLocationBtn) {
+                    autoLocationBtn.addEventListener('click', detectLocation);
+                }
+                if (manualLocationBtn) {
+                    manualLocationBtn.addEventListener('click', setManualLocation);
+                }
+
+                // Mobile menu toggle
+                if (mobileMenuBtn) {
+                    mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+                }
+
+                // Language selector
+                const languageSelect = document.getElementById('languageSelect');
+                if (languageSelect) {
+                    languageSelect.addEventListener('change', handleLanguageChange);
+                }
+
+                // Tool buttons
+                document.addEventListener('click', function(e) {
+                    if (e.target.matches('[data-tool]')) {
+                        openToolModal(e.target.dataset.tool);
+                    }
+                });
+
+                // IoT data button
+                const addIoTDataBtn = document.getElementById('addIoTDataBtn');
+                if (addIoTDataBtn) {
+                    addIoTDataBtn.addEventListener('click', openIoTModal);
+                }
+
+                // Modal close buttons
+                const closeButtons = document.querySelectorAll('[id$="Modal"] button[id^="close"]');
+                closeButtons.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const modal = this.closest('[id$="Modal"]');
+                        if (modal) modal.classList.add('hidden');
+                    });
+                });
+
+                // IoT slider updates
+                setupIoTSliders();
+
+                // Navigation highlighting
+                setupNavigation();
+            }
+
+            function handleLogin(e) {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                
+                if (email) {
+                    isLoggedIn = true;
+                    hideLoginModal();
+                    showLocationModal();
+                }
+            }
+
+            function showLoginModal() {
+                if (loginModal) {
+                    loginModal.classList.remove('hidden');
+                }
+            }
+
+            function hideLoginModal() {
+                if (loginModal) {
+                    loginModal.classList.add('hidden');
+                }
+            }
+
+            function showLocationModal() {
+                if (locationModal) {
+                    locationModal.classList.remove('hidden');
+                }
+            }
+
+            function detectLocation() {
+                // @IMPLEMENTATION: Should use Geolocation API
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        userLocation = `${position.coords.latitude}, ${position.coords.longitude}`;
+                        hideLocationModal();
+                    }, function(error) {
+                        console.log('Location detection failed:', error);
+                        // Fallback to manual location
+                    });
+                } else {
+                    alert('Geolocation is not supported by this browser.');
+                }
+            }
+
+            function setManualLocation() {
+                const manualLocation = document.getElementById('manualLocation').value;
+                if (manualLocation) {
+                    userLocation = manualLocation;
+                    hideLocationModal();
+                }
+            }
+
+            function hideLocationModal() {
+                if (locationModal) {
+                    locationModal.classList.add('hidden');
+                }
+            }
+
+            function toggleMobileMenu() {
+                if (mobileMenu) {
+                    mobileMenu.classList.toggle('hidden');
+                }
+            }
+
+            function handleLanguageChange(e) {
+                currentLanguage = e.target.value;
+                updateLanguage();
+            }
+
+            function updateLanguage() {
+                // @IMPLEMENTATION: Should update all translatable text elements
+                const translation = translations[currentLanguage];
+                if (translation) {
+                    // Update main heading and tagline
+                    const mainHeading = document.querySelector('h1');
+                    const tagline = document.querySelector('p[data-tagline]');
+                    
+                    // This is a simplified implementation
+                    // Full implementation would update all translatable elements
+                }
+            }
+
+            function openToolModal(toolType) {
+                const modal = document.getElementById('toolModal');
+                const title = document.getElementById('toolModalTitle');
+                const content = document.getElementById('toolModalContent');
+                
+                if (modal && title && content) {
+                    // @IMPLEMENTATION: Load different content based on toolType
+                    switch (toolType) {
+                        case 'crop-analysis':
+                            title.textContent = 'Crop Analysis Tool';
+                            break;
+                        case 'profit-calculator':
+                            title.textContent = 'Profit Calculator';
+                            break;
+                        default:
+                            title.textContent = 'Smart Tool';
+                    }
+                    
+                    modal.classList.remove('hidden');
+                }
+            }
+
+            function openIoTModal() {
+                if (iotModal) {
+                    iotModal.classList.remove('hidden');
+                }
+            }
+
+            function setupIoTSliders() {
+                const sliders = [
+                    { id: 'soilMoisture', valueId: 'soilMoistureValue', suffix: '%' },
+                    { id: 'temperature', valueId: 'temperatureValue', suffix: '°C' },
+                    { id: 'lightIntensity', valueId: 'lightIntensityValue', suffix: '' },
+                    { id: 'phLevel', valueId: 'phLevelValue', suffix: '' }
+                ];
+
+                sliders.forEach(slider => {
+                    const element = document.getElementById(slider.id);
+                    const valueElement = document.getElementById(slider.valueId);
+                    
+                    if (element && valueElement) {
+                        element.addEventListener('input', function() {
+                            valueElement.textContent = this.value + slider.suffix;
+                        });
+                    }
+                });
+            }
+
+            function setupNavigation() {
+                const navLinks = document.querySelectorAll('[data-nav]');
+                
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        // Update active states
+                        navLinks.forEach(l => l.classList.remove('text-foreground'));
+                        navLinks.forEach(l => l.classList.add('text-muted-foreground'));
+                        
+                        this.classList.remove('text-muted-foreground');
+                        this.classList.add('text-foreground');
+                        
+                        // Smooth scroll to section
+                        const targetId = this.getAttribute('href');
+                        const targetElement = document.querySelector(targetId);
+                        if (targetElement) {
+                            targetElement.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+                });
+            }
+
+            // Initialize when DOM is loaded
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        })();
+    </script>
+</body>
+</html>

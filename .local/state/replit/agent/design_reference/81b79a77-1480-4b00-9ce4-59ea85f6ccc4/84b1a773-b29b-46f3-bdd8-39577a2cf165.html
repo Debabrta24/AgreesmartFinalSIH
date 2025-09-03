@@ -1,0 +1,1059 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgreeGrow - Smart Farming. Smarter Future.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)", 
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    popover: {
+                        DEFAULT: "var(--popover)",
+                        foreground: "var(--popover-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                }
+            }
+        }
+    };
+    </script>
+    <style>
+        :root {
+            --background: hsl(210 20% 98%);
+            --foreground: hsl(210 15% 15%);
+            --card: hsl(210 20% 100%);
+            --card-foreground: hsl(210 15% 15%);
+            --popover: hsl(210 20% 100%);
+            --popover-foreground: hsl(210 15% 15%);
+            --primary: hsl(142 76% 36%);
+            --primary-foreground: hsl(355 7% 97%);
+            --secondary: hsl(45 93% 47%);
+            --secondary-foreground: hsl(45 9% 15%);
+            --muted: hsl(142 30% 96%);
+            --muted-foreground: hsl(210 40% 45%);
+            --accent: hsl(214 82% 51%);
+            --accent-foreground: hsl(210 20% 98%);
+            --destructive: hsl(0 84% 60%);
+            --destructive-foreground: hsl(210 20% 98%);
+            --border: hsl(142 30% 85%);
+            --input: hsl(210 40% 95%);
+            --ring: hsl(142 76% 36%);
+            --radius: 0.75rem;
+        }
+
+        .dark {
+            --background: hsl(142 15% 8%);
+            --foreground: hsl(142 5% 95%);
+            --card: hsl(142 15% 10%);
+            --card-foreground: hsl(142 5% 95%);
+            --popover: hsl(142 15% 10%);
+            --popover-foreground: hsl(142 5% 95%);
+            --primary: hsl(142 76% 45%);
+            --primary-foreground: hsl(142 15% 8%);
+            --secondary: hsl(45 93% 55%);
+            --secondary-foreground: hsl(45 9% 15%);
+            --muted: hsl(142 15% 15%);
+            --muted-foreground: hsl(142 10% 60%);
+            --accent: hsl(214 82% 65%);
+            --accent-foreground: hsl(142 15% 8%);
+            --destructive: hsl(0 84% 65%);
+            --destructive-foreground: hsl(142 5% 95%);
+            --border: hsl(142 15% 20%);
+            --input: hsl(142 15% 15%);
+            --ring: hsl(142 76% 45%);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        .glass-card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dark .glass-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        }
+
+        .data-visualization {
+            background: linear-gradient(45deg, transparent 40%, rgba(34, 197, 94, 0.1) 50%, transparent 60%);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-background text-foreground transition-colors duration-300">
+    <!-- @COMPONENT: LoginModal -->
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-card p-8 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div class="text-center mb-6">
+                <i class="fas fa-seedling text-4xl text-primary mb-4"></i>
+                <h2 class="text-2xl font-bold text-card-foreground">Welcome to AgreeGrow</h2>
+                <p class="text-muted-foreground mt-2">Smart Farming. Smarter Future.</p>
+            </div>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-card-foreground mb-2">Email</label>
+                    <input type="email" class="w-full px-3 py-2 border border-border rounded-md bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-ring" placeholder="farmer@example.com" data-mock="true">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-card-foreground mb-2">Password</label>
+                    <input type="password" class="w-full px-3 py-2 border border-border rounded-md bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-ring" placeholder="••••••••" data-mock="true">
+                </div>
+                <button type="submit" class="w-full bg-primary text-primary-foreground py-2 rounded-md hover:bg-primary/90 transition-colors" data-event="click:handleLogin">
+                    Sign In
+                </button>
+                <p class="text-xs text-muted-foreground text-center">Demo: Use any email to access</p>
+            </form>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: LoginModal -->
+
+    <!-- @COMPONENT: LanguageModal -->
+    <div id="languageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-card p-8 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <h2 class="text-2xl font-bold text-card-foreground mb-6 text-center">Select Your Language</h2>
+            <div class="grid grid-cols-2 gap-3">
+                <!-- @MAP: languages.map(lang => ( -->
+                <button class="p-3 border border-border rounded-md hover:bg-muted transition-colors text-left" data-event="click:selectLanguage" data-lang="en">
+                    <div class="font-medium">English</div>
+                    <div class="text-sm text-muted-foreground">English</div>
+                </button>
+                <button class="p-3 border border-border rounded-md hover:bg-muted transition-colors text-left" data-event="click:selectLanguage" data-lang="hi">
+                    <div class="font-medium">हिंदी</div>
+                    <div class="text-sm text-muted-foreground">Hindi</div>
+                </button>
+                <button class="p-3 border border-border rounded-md hover:bg-muted transition-colors text-left" data-event="click:selectLanguage" data-lang="bn">
+                    <div class="font-medium">বাংলা</div>
+                    <div class="text-sm text-muted-foreground">Bengali</div>
+                </button>
+                <button class="p-3 border border-border rounded-md hover:bg-muted transition-colors text-left" data-event="click:selectLanguage" data-lang="ta">
+                    <div class="font-medium">தமிழ்</div>
+                    <div class="text-sm text-muted-foreground">Tamil</div>
+                </button>
+                <!-- @END_MAP )) -->
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: LanguageModal -->
+
+    <!-- @COMPONENT: Navigation -->
+    <nav class="bg-card border-b border-border shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-8">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-seedling text-2xl text-primary"></i>
+                        <span class="text-xl font-bold text-card-foreground">AgreeGrow</span>
+                    </div>
+                    <div class="hidden md:flex space-x-6">
+                        <a href="#home" class="text-muted-foreground hover:text-primary transition-colors">Home</a>
+                        <a href="#project" class="text-muted-foreground hover:text-primary transition-colors">Project Idea</a>
+                        <a href="#about" class="text-muted-foreground hover:text-primary transition-colors">About Us</a>
+                        <a href="#tools" class="text-muted-foreground hover:text-primary transition-colors">Smart Tools</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <select class="px-3 py-1 border border-border rounded-md bg-input text-foreground text-sm">
+                        <option value="en">🇺🇸 EN</option>
+                        <option value="hi">🇮🇳 हिंदी</option>
+                        <option value="bn">🇧🇩 বাংলা</option>
+                        <option value="ta">🇮🇳 தமிழ்</option>
+                    </select>
+                    <button id="themeToggle" class="p-2 rounded-md hover:bg-muted transition-colors" data-event="click:toggleTheme">
+                        <i class="fas fa-moon text-muted-foreground"></i>
+                    </button>
+                    <button class="md:hidden p-2 rounded-md hover:bg-muted transition-colors">
+                        <i class="fas fa-bars text-muted-foreground"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: Navigation -->
+
+    <!-- @COMPONENT: HeroSection -->
+    <section id="home" class="gradient-bg text-primary-foreground py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <h1 class="text-5xl font-bold leading-tight">
+                        Smart Farming.<br>
+                        <span class="text-secondary">Smarter Future.</span>
+                    </h1>
+                    <p class="text-xl text-primary-foreground/90">
+                        Revolutionize your farming with AI-powered crop recommendations, real-time IoT monitoring, and intelligent market insights.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button class="bg-secondary text-secondary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-secondary/90 transition-colors" data-event="click:startFarming">
+                            Start Smart Farming
+                        </button>
+                        <button class="border border-primary-foreground/30 text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary-foreground/10 transition-colors" data-event="click:watchDemo">
+                            Watch Demo
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-6 text-sm">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-secondary"></i>
+                            <span>AI-Powered</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-secondary"></i>
+                            <span>IoT Integration</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-secondary"></i>
+                            <span>Multi-Language</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <!-- Modern agricultural landscape with IoT sensors and green fields -->
+                    <img src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" alt="Smart farming with IoT technology" class="rounded-xl shadow-2xl animate-float" data-mock-image="true">
+                    <div class="absolute -bottom-4 -left-4 bg-card p-4 rounded-lg shadow-lg">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-thermometer-half text-accent"></i>
+                            <div>
+                                <div class="text-sm font-medium text-card-foreground" data-bind="weather.temperature">24°C</div>
+                                <div class="text-xs text-muted-foreground">Temperature</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute -top-4 -right-4 bg-card p-4 rounded-lg shadow-lg">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-tint text-primary"></i>
+                            <div>
+                                <div class="text-sm font-medium text-card-foreground" data-bind="soil.moisture">68%</div>
+                                <div class="text-xs text-muted-foreground">Soil Moisture</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: HeroSection -->
+
+    <!-- @COMPONENT: SmartTools -->
+    <section id="tools" class="py-20 bg-muted/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-foreground mb-4">Smart Farming Tools</h2>
+                <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+                    Comprehensive suite of AI-powered tools to optimize your farming operations
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- @MAP: tools.map(tool => ( -->
+                <div class="bg-card p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-border">
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-camera text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3">Crop Doctor</h3>
+                    <p class="text-muted-foreground mb-4">AI-powered pest and disease detection using your camera with organic solution recommendations.</p>
+                    <button class="w-full bg-primary text-primary-foreground py-2 rounded-lg hover:bg-primary/90 transition-colors" data-event="click:openCropDoctor">
+                        Open Camera
+                    </button>
+                </div>
+
+                <div class="bg-card p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-border">
+                    <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-chart-line text-secondary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3">Price Tracker</h3>
+                    <p class="text-muted-foreground mb-4">Real-time crop prices and AI-powered market predictions to maximize your profits.</p>
+                    <button class="w-full bg-secondary text-secondary-foreground py-2 rounded-lg hover:bg-secondary/90 transition-colors" data-event="click:openPriceTracker">
+                        View Prices
+                    </button>
+                </div>
+
+                <div class="bg-card p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-border">
+                    <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-cloud-rain text-accent text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3">Weather Shield</h3>
+                    <p class="text-muted-foreground mb-4">Advanced weather alerts and risk predictions to protect your crops from extreme conditions.</p>
+                    <button class="w-full bg-accent text-accent-foreground py-2 rounded-lg hover:bg-accent/90 transition-colors" data-event="click:openWeatherShield">
+                        Check Weather
+                    </button>
+                </div>
+
+                <div class="bg-card p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-border">
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-microchip text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3">IoT Dashboard</h3>
+                    <p class="text-muted-foreground mb-4">Real-time sensor data visualization with 3D effects and automated recommendations.</p>
+                    <button class="w-full bg-primary text-primary-foreground py-2 rounded-lg hover:bg-primary/90 transition-colors" data-event="click:openIoTDashboard">
+                        View Dashboard
+                    </button>
+                </div>
+
+                <div class="bg-card p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-border">
+                    <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-calculator text-secondary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3">Profit Calculator</h3>
+                    <p class="text-muted-foreground mb-4">AI-powered financial insights, cost analysis, and government subsidy information.</p>
+                    <button class="w-full bg-secondary text-secondary-foreground py-2 rounded-lg hover:bg-secondary/90 transition-colors" data-event="click:openProfitCalculator">
+                        Calculate Profit
+                    </button>
+                </div>
+
+                <div class="bg-card p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-border">
+                    <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-seedling text-accent text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3">Crop Advisor</h3>
+                    <p class="text-muted-foreground mb-4">Intelligent crop recommendations based on soil, weather, and market conditions.</p>
+                    <button class="w-full bg-accent text-accent-foreground py-2 rounded-lg hover:bg-accent/90 transition-colors" data-event="click:openCropAdvisor">
+                        Get Recommendations
+                    </button>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: SmartTools -->
+
+    <!-- @COMPONENT: Dashboard -->
+    <section class="py-20 bg-background">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-foreground mb-4">Farm Intelligence Dashboard</h2>
+                <p class="text-xl text-muted-foreground">Real-time insights powered by AI and IoT sensors</p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Weather & Alerts -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-card p-6 rounded-xl shadow-lg border border-border">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-card-foreground">Weather Today</h3>
+                            <i class="fas fa-sun text-secondary text-xl"></i>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-muted-foreground">Temperature</span>
+                                <span class="font-medium text-card-foreground" data-bind="weather.temp">28°C</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-muted-foreground">Humidity</span>
+                                <span class="font-medium text-card-foreground" data-bind="weather.humidity">65%</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-muted-foreground">Wind Speed</span>
+                                <span class="font-medium text-card-foreground" data-bind="weather.wind">12 km/h</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-muted-foreground">UV Index</span>
+                                <span class="font-medium text-card-foreground" data-bind="weather.uv">6</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-card p-6 rounded-xl shadow-lg border border-border">
+                        <h3 class="text-lg font-semibold text-card-foreground mb-4">Active Alerts</h3>
+                        <div class="space-y-3">
+                            <div class="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-exclamation-triangle text-destructive text-sm"></i>
+                                    <span class="text-sm font-medium text-destructive">High Wind Alert</span>
+                                </div>
+                                <p class="text-xs text-muted-foreground mt-1">Strong winds expected tomorrow</p>
+                            </div>
+                            <div class="p-3 bg-secondary/10 border border-secondary/20 rounded-lg">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-info-circle text-secondary text-sm"></i>
+                                    <span class="text-sm font-medium text-secondary">Irrigation Reminder</span>
+                                </div>
+                                <p class="text-xs text-muted-foreground mt-1">Zone A needs watering in 2 hours</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-card p-6 rounded-xl shadow-lg border border-border">
+                        <h3 class="text-lg font-semibold text-card-foreground mb-4">Market Prices</h3>
+                        <div class="space-y-3">
+                            <!-- @MAP: marketPrices.map(price => ( -->
+                            <div class="flex items-center justify-between">
+                                <span class="text-muted-foreground">Wheat</span>
+                                <div class="text-right">
+                                    <span class="font-medium text-card-foreground" data-bind="prices.wheat">₹2,150/qt</span>
+                                    <span class="text-xs text-primary ml-1">↗ 2.3%</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-muted-foreground">Rice</span>
+                                <div class="text-right">
+                                    <span class="font-medium text-card-foreground" data-bind="prices.rice">₹3,200/qt</span>
+                                    <span class="text-xs text-destructive ml-1">↘ 1.1%</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-muted-foreground">Corn</span>
+                                <div class="text-right">
+                                    <span class="font-medium text-card-foreground" data-bind="prices.corn">₹1,850/qt</span>
+                                    <span class="text-xs text-primary ml-1">↗ 0.8%</span>
+                                </div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Dashboard -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-card p-6 rounded-xl shadow-lg border border-border">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-card-foreground">IoT Sensor Data</h3>
+                            <button class="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm hover:bg-primary/90 transition-colors" data-event="click:addIoTData">
+                                Add IoT Data
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div class="text-center p-4 bg-muted/50 rounded-lg">
+                                <i class="fas fa-tint text-primary text-2xl mb-2"></i>
+                                <div class="text-2xl font-bold text-card-foreground" data-bind="sensors.moisture">68%</div>
+                                <div class="text-sm text-muted-foreground">Soil Moisture</div>
+                            </div>
+                            <div class="text-center p-4 bg-muted/50 rounded-lg">
+                                <i class="fas fa-thermometer-half text-secondary text-2xl mb-2"></i>
+                                <div class="text-2xl font-bold text-card-foreground" data-bind="sensors.temp">24°C</div>
+                                <div class="text-sm text-muted-foreground">Temperature</div>
+                            </div>
+                            <div class="text-center p-4 bg-muted/50 rounded-lg">
+                                <i class="fas fa-sun text-secondary text-2xl mb-2"></i>
+                                <div class="text-2xl font-bold text-card-foreground" data-bind="sensors.light">85%</div>
+                                <div class="text-sm text-muted-foreground">Light Intensity</div>
+                            </div>
+                            <div class="text-center p-4 bg-muted/50 rounded-lg">
+                                <i class="fas fa-leaf text-primary text-2xl mb-2"></i>
+                                <div class="text-2xl font-bold text-card-foreground" data-bind="sensors.ph">6.8</div>
+                                <div class="text-sm text-muted-foreground">Soil pH</div>
+                            </div>
+                        </div>
+
+                        <!-- Chart Placeholder -->
+                        <div class="bg-muted/30 rounded-lg p-6 data-visualization">
+                            <div class="h-48 flex items-center justify-center">
+                                <div class="text-center">
+                                    <i class="fas fa-chart-line text-primary text-3xl mb-2"></i>
+                                    <p class="text-muted-foreground">Sensor Data Visualization</p>
+                                    <p class="text-xs text-muted-foreground mt-1">Real-time charts would display here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-card p-6 rounded-xl shadow-lg border border-border">
+                            <h3 class="text-lg font-semibold text-card-foreground mb-4">Crop Health Status</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-3 h-3 bg-primary rounded-full"></div>
+                                        <span class="text-muted-foreground">Zone A - Wheat</span>
+                                    </div>
+                                    <span class="text-sm font-medium text-primary">Excellent</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-3 h-3 bg-secondary rounded-full"></div>
+                                        <span class="text-muted-foreground">Zone B - Rice</span>
+                                    </div>
+                                    <span class="text-sm font-medium text-secondary">Good</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-3 h-3 bg-destructive rounded-full"></div>
+                                        <span class="text-muted-foreground">Zone C - Corn</span>
+                                    </div>
+                                    <span class="text-sm font-medium text-destructive">Needs Attention</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-card p-6 rounded-xl shadow-lg border border-border">
+                            <h3 class="text-lg font-semibold text-card-foreground mb-4">AI Recommendations</h3>
+                            <div class="space-y-3">
+                                <div class="p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                                    <p class="text-sm text-card-foreground font-medium">Apply NPK fertilizer to Zone C</p>
+                                    <p class="text-xs text-muted-foreground mt-1">Corn shows nitrogen deficiency</p>
+                                </div>
+                                <div class="p-3 bg-accent/10 border border-accent/20 rounded-lg">
+                                    <p class="text-sm text-card-foreground font-medium">Increase irrigation frequency</p>
+                                    <p class="text-xs text-muted-foreground mt-1">Soil moisture below optimal levels</p>
+                                </div>
+                                <div class="p-3 bg-secondary/10 border border-secondary/20 rounded-lg">
+                                    <p class="text-sm text-card-foreground font-medium">Harvest Zone A in 2 weeks</p>
+                                    <p class="text-xs text-muted-foreground mt-1">Optimal market timing predicted</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: Dashboard -->
+
+    <!-- @COMPONENT: CameraModal -->
+    <div id="cameraModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-card p-6 rounded-xl shadow-xl max-w-lg w-full mx-4">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-card-foreground">Crop Doctor - Pest Detection</h3>
+                <button id="closeCameraModal" class="text-muted-foreground hover:text-foreground">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="bg-muted/30 rounded-lg p-8 text-center border-2 border-dashed border-border">
+                    <i class="fas fa-camera text-primary text-4xl mb-4"></i>
+                    <p class="text-muted-foreground mb-4">Point camera at affected plant parts</p>
+                    <div class="flex justify-center space-x-4">
+                        <button class="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors" data-event="click:openCamera">
+                            <i class="fas fa-camera mr-2"></i>Take Photo
+                        </button>
+                        <button class="border border-border text-foreground px-6 py-2 rounded-lg hover:bg-muted transition-colors" data-event="click:uploadPhoto">
+                            <i class="fas fa-upload mr-2"></i>Upload Photo
+                        </button>
+                    </div>
+                    <div class="mt-4 flex items-center justify-center space-x-4">
+                        <button id="flashToggle" class="p-2 rounded-lg bg-muted text-muted-foreground hover:text-foreground transition-colors" data-event="click:toggleFlash">
+                            <i class="fas fa-bolt"></i>
+                        </button>
+                        <span class="text-xs text-muted-foreground">Flash Control</span>
+                    </div>
+                </div>
+                
+                <!-- Analysis Results -->
+                <div class="bg-primary/10 border border-primary/20 rounded-lg p-4">
+                    <h4 class="font-medium text-card-foreground mb-2">AI Analysis Results</h4>
+                    <div class="space-y-2 text-sm">
+                        <p class="text-muted-foreground">• Detected: <span class="text-destructive font-medium">Aphid infestation</span></p>
+                        <p class="text-muted-foreground">• Severity: <span class="text-secondary font-medium">Moderate</span></p>
+                        <p class="text-muted-foreground">• Organic Solution: Neem oil spray</p>
+                        <p class="text-muted-foreground">• Ayurvedic Remedy: Turmeric-water solution</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: CameraModal -->
+
+    <!-- @COMPONENT: IoTModal -->
+    <div id="iotModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-card p-6 rounded-xl shadow-xl max-w-lg w-full mx-4">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-card-foreground">Add IoT Sensor Data</h3>
+                <button id="closeIoTModal" class="text-muted-foreground hover:text-foreground">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-card-foreground mb-2">Sensor Type</label>
+                    <select class="w-full px-3 py-2 border border-border rounded-md bg-input text-foreground">
+                        <option>ESP32 Multi-Sensor</option>
+                        <option>Soil Moisture Sensor</option>
+                        <option>Temperature Sensor</option>
+                        <option>Light Sensor</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-card-foreground mb-2">Soil Moisture (%)</label>
+                        <input type="number" class="w-full px-3 py-2 border border-border rounded-md bg-input text-foreground" placeholder="65" data-mock="true">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-card-foreground mb-2">Temperature (°C)</label>
+                        <input type="number" class="w-full px-3 py-2 border border-border rounded-md bg-input text-foreground" placeholder="24" data-mock="true">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-card-foreground mb-2">Light Intensity (%)</label>
+                        <input type="number" class="w-full px-3 py-2 border border-border rounded-md bg-input text-foreground" placeholder="85" data-mock="true">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-card-foreground mb-2">Soil pH</label>
+                        <input type="number" step="0.1" class="w-full px-3 py-2 border border-border rounded-md bg-input text-foreground" placeholder="6.8" data-mock="true">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-primary text-primary-foreground py-2 rounded-md hover:bg-primary/90 transition-colors" data-event="click:submitIoTData">
+                    Update Sensor Data
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: IoTModal -->
+
+    <!-- @COMPONENT: Features -->
+    <section class="py-20 bg-muted/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-foreground mb-4">Innovative Features</h2>
+                <p class="text-xl text-muted-foreground">Advanced technology for modern farming</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-card p-6 rounded-xl shadow-lg border border-border">
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-cube text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3">Digital Twin 3D Model</h3>
+                    <p class="text-muted-foreground">Virtual plant representation reflecting real soil and crop conditions with visual health indicators.</p>
+                </div>
+
+                <div class="bg-card p-6 rounded-xl shadow-lg border border-border">
+                    <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-users text-secondary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3">Community Forum</h3>
+                    <p class="text-muted-foreground">Connect with fellow farmers to share tips, ask questions, and trade goods locally.</p>
+                </div>
+
+                <div class="bg-card p-6 rounded-xl shadow-lg border border-border">
+                    <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-mobile-alt text-accent text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3">AR Farming Assistant</h3>
+                    <p class="text-muted-foreground">Augmented reality overlays suggest optimal watering, fertilizing, and planting locations.</p>
+                </div>
+
+                <div class="bg-card p-6 rounded-xl shadow-lg border border-border">
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-leaf text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3">Sustainability Index</h3>
+                    <p class="text-muted-foreground">Track and improve your farming practices with eco-friendly recommendations and water usage optimization.</p>
+                </div>
+
+                <div class="bg-card p-6 rounded-xl shadow-lg border border-border">
+                    <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-rupee-sign text-secondary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3">Financial Insights</h3>
+                    <p class="text-muted-foreground">Cost vs yield analysis, profit optimization, and government subsidy information.</p>
+                </div>
+
+                <div class="bg-card p-6 rounded-xl shadow-lg border border-border">
+                    <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-brain text-accent text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-card-foreground mb-3">Gemini AI Fallback</h3>
+                    <p class="text-muted-foreground">Intelligent backup system ensures reliable recommendations even when primary APIs are unavailable.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: Features -->
+
+    <!-- @COMPONENT: AboutSection -->
+    <section id="about" class="py-20 bg-background">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-4xl font-bold text-foreground mb-6">About AgreeGrow</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-xl font-semibold text-foreground mb-2">Our Mission</h3>
+                            <p class="text-muted-foreground">Use AI and IoT technology to make farming simple, profitable, and sustainable for farmers worldwide.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-foreground mb-2">Our Vision</h3>
+                            <p class="text-muted-foreground">Build a comprehensive farming ecosystem that leverages real-time technology to create smarter agricultural practices.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-foreground mb-2">Technology Stack</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">AI/ML</span>
+                                <span class="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-sm">IoT Integration</span>
+                                <span class="px-3 py-1 bg-accent/10 text-accent rounded-full text-sm">Weather APIs</span>
+                                <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">Gemini AI</span>
+                                <span class="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-sm">Market Data</span>
+                                <span class="px-3 py-1 bg-accent/10 text-accent rounded-full text-sm">Computer Vision</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <!-- Farmer using modern technology in agricultural field -->
+                    <img src="https://images.unsplash.com/photo-1605000797499-95a51c5269ae?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=600" alt="Modern farmer using technology" class="rounded-xl shadow-lg" data-mock-image="true">
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div class="p-4 bg-card rounded-lg border border-border">
+                            <div class="text-2xl font-bold text-primary" data-bind="stats.farmers">10K+</div>
+                            <div class="text-sm text-muted-foreground">Active Farmers</div>
+                        </div>
+                        <div class="p-4 bg-card rounded-lg border border-border">
+                            <div class="text-2xl font-bold text-secondary" data-bind="stats.analyses">50K+</div>
+                            <div class="text-sm text-muted-foreground">Crop Analyses</div>
+                        </div>
+                        <div class="p-4 bg-card rounded-lg border border-border">
+                            <div class="text-2xl font-bold text-accent" data-bind="stats.savings">₹2Cr+</div>
+                            <div class="text-sm text-muted-foreground">Cost Savings</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: AboutSection -->
+
+    <!-- @COMPONENT: ProjectIdea -->
+    <section id="project" class="py-20 gradient-bg text-primary-foreground">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">Project Architecture</h2>
+                <p class="text-xl text-primary-foreground/90">How AgreeGrow brings together cutting-edge technology</p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <div class="bg-primary-foreground/10 backdrop-blur-sm p-6 rounded-xl border border-primary-foreground/20">
+                    <div class="w-12 h-12 bg-secondary rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-database text-secondary-foreground text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Data Collection</h3>
+                    <ul class="space-y-2 text-primary-foreground/80">
+                        <li>• IoT sensors (ESP32)</li>
+                        <li>• Weather APIs</li>
+                        <li>• Soil condition monitoring</li>
+                        <li>• Market price feeds</li>
+                        <li>• Camera-based analysis</li>
+                    </ul>
+                </div>
+
+                <div class="bg-primary-foreground/10 backdrop-blur-sm p-6 rounded-xl border border-primary-foreground/20">
+                    <div class="w-12 h-12 bg-accent rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-brain text-accent-foreground text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">AI Processing</h3>
+                    <ul class="space-y-2 text-primary-foreground/80">
+                        <li>• Gemini AI analysis</li>
+                        <li>• Crop recommendation engine</li>
+                        <li>• Pest detection algorithms</li>
+                        <li>• Market prediction models</li>
+                        <li>• Risk assessment AI</li>
+                    </ul>
+                </div>
+
+                <div class="bg-primary-foreground/10 backdrop-blur-sm p-6 rounded-xl border border-primary-foreground/20">
+                    <div class="w-12 h-12 bg-secondary rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-chart-line text-secondary-foreground text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Smart Recommendations</h3>
+                    <ul class="space-y-2 text-primary-foreground/80">
+                        <li>• Crop selection guidance</li>
+                        <li>• Fertilizer recommendations</li>
+                        <li>• Irrigation scheduling</li>
+                        <li>• Market timing advice</li>
+                        <li>• Risk mitigation strategies</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-12 text-center">
+                <div class="bg-primary-foreground/10 backdrop-blur-sm p-8 rounded-xl border border-primary-foreground/20 max-w-4xl mx-auto">
+                    <h3 class="text-2xl font-semibold mb-4">API Integration Strategy</h3>
+                    <p class="text-primary-foreground/90 mb-6">
+                        AgreeGrow seamlessly integrates multiple free APIs for comprehensive data collection, 
+                        with Gemini AI as an intelligent fallback system that ensures uninterrupted service 
+                        even when primary APIs are unavailable.
+                    </p>
+                    <div class="grid md:grid-cols-4 gap-4 text-sm">
+                        <div class="p-3 bg-primary-foreground/10 rounded-lg">
+                            <div class="font-medium">Weather Data</div>
+                            <div class="text-primary-foreground/70">OpenWeatherMap, Tomorrow.io</div>
+                        </div>
+                        <div class="p-3 bg-primary-foreground/10 rounded-lg">
+                            <div class="font-medium">Soil Analysis</div>
+                            <div class="text-primary-foreground/70">NASA POWER, Open-Meteo</div>
+                        </div>
+                        <div class="p-3 bg-primary-foreground/10 rounded-lg">
+                            <div class="font-medium">Market Prices</div>
+                            <div class="text-primary-foreground/70">Agmarknet, Government APIs</div>
+                        </div>
+                        <div class="p-3 bg-primary-foreground/10 rounded-lg">
+                            <div class="font-medium">Plant Health</div>
+                            <div class="text-primary-foreground/70">Plant.id, Computer Vision</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: ProjectIdea -->
+
+    <!-- @COMPONENT: Footer -->
+    <footer class="bg-card border-t border-border py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-seedling text-2xl text-primary"></i>
+                        <span class="text-xl font-bold text-card-foreground">AgreeGrow</span>
+                    </div>
+                    <p class="text-muted-foreground">Smart Farming. Smarter Future.</p>
+                    <div class="flex space-x-4">
+                        <i class="fab fa-twitter text-muted-foreground hover:text-primary cursor-pointer transition-colors"></i>
+                        <i class="fab fa-facebook text-muted-foreground hover:text-primary cursor-pointer transition-colors"></i>
+                        <i class="fab fa-instagram text-muted-foreground hover:text-primary cursor-pointer transition-colors"></i>
+                        <i class="fab fa-linkedin text-muted-foreground hover:text-primary cursor-pointer transition-colors"></i>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-card-foreground mb-4">Features</h3>
+                    <ul class="space-y-2 text-muted-foreground">
+                        <li><a href="#" class="hover:text-primary transition-colors">Crop Analysis</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Pest Detection</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Market Intelligence</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Weather Alerts</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">IoT Integration</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-card-foreground mb-4">Resources</h3>
+                    <ul class="space-y-2 text-muted-foreground">
+                        <li><a href="#" class="hover:text-primary transition-colors">Documentation</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">API Reference</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Community Forum</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Support</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Blog</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-card-foreground mb-4">Contact</h3>
+                    <ul class="space-y-2 text-muted-foreground">
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-envelope text-sm"></i>
+                            <span>hello@agreegrow.com</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-phone text-sm"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fas fa-map-marker-alt text-sm"></i>
+                            <span>Mumbai, India</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-border mt-8 pt-8 text-center text-muted-foreground">
+                <p>&copy; 2024 AgreeGrow. All rights reserved. | Privacy Policy | Terms of Service</p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <script>
+        (function() {
+            // Theme management
+            const themeToggle = document.getElementById('themeToggle');
+            const body = document.body;
+            const themeIcon = themeToggle.querySelector('i');
+            
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            body.classList.toggle('dark', savedTheme === 'dark');
+            updateThemeIcon();
+            
+            function updateThemeIcon() {
+                const isDark = body.classList.contains('dark');
+                themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            }
+            
+            themeToggle.addEventListener('click', function() {
+                body.classList.toggle('dark');
+                const newTheme = body.classList.contains('dark') ? 'dark' : 'light';
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon();
+            });
+
+            // Modal management
+            const loginModal = document.getElementById('loginModal');
+            const languageModal = document.getElementById('languageModal');
+            const cameraModal = document.getElementById('cameraModal');
+            const iotModal = document.getElementById('iotModal');
+
+            // Show login modal on page load
+            setTimeout(() => {
+                loginModal.classList.remove('hidden');
+            }, 1000);
+
+            // Login form handler
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                loginModal.classList.add('hidden');
+                setTimeout(() => {
+                    languageModal.classList.remove('hidden');
+                }, 500);
+            });
+
+            // Language selection
+            document.querySelectorAll('[data-event="click:selectLanguage"]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const lang = this.dataset.lang;
+                    languageModal.classList.add('hidden');
+                    // TODO: Implement language switching logic
+                    console.log('Selected language:', lang);
+                });
+            });
+
+            // Smart tools event handlers
+            document.querySelector('[data-event="click:openCropDoctor"]').addEventListener('click', function() {
+                cameraModal.classList.remove('hidden');
+            });
+
+            document.querySelector('[data-event="click:addIoTData"]').addEventListener('click', function() {
+                iotModal.classList.remove('hidden');
+            });
+
+            // Close modal handlers
+            document.getElementById('closeCameraModal').addEventListener('click', function() {
+                cameraModal.classList.add('hidden');
+            });
+
+            document.getElementById('closeIoTModal').addEventListener('click', function() {
+                iotModal.classList.add('hidden');
+            });
+
+            // Flash toggle for camera
+            document.getElementById('flashToggle').addEventListener('click', function() {
+                this.classList.toggle('text-secondary');
+                this.classList.toggle('text-muted-foreground');
+                // TODO: Implement actual flash control
+                console.log('Flash toggled');
+            });
+
+            // Camera controls
+            document.querySelector('[data-event="click:openCamera"]').addEventListener('click', function() {
+                // TODO: Implement camera access
+                console.log('Opening camera...');
+            });
+
+            document.querySelector('[data-event="click:uploadPhoto"]').addEventListener('click', function() {
+                // TODO: Implement photo upload
+                console.log('Opening file picker...');
+            });
+
+            // IoT data submission
+            document.querySelector('[data-event="click:submitIoTData"]').addEventListener('click', function(e) {
+                e.preventDefault();
+                // TODO: Process IoT sensor data
+                console.log('Submitting IoT data...');
+                iotModal.classList.add('hidden');
+            });
+
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Close modals when clicking outside
+            [loginModal, languageModal, cameraModal, iotModal].forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
+            });
+
+            // Simulate real-time data updates
+            function updateSensorData() {
+                // TODO: Replace with actual API calls
+                const moisture = Math.floor(Math.random() * 20) + 60;
+                const temp = Math.floor(Math.random() * 10) + 20;
+                const light = Math.floor(Math.random() * 30) + 70;
+                const ph = (Math.random() * 2 + 6).toFixed(1);
+
+                // Update display elements
+                document.querySelectorAll('[data-bind="sensors.moisture"]').forEach(el => {
+                    el.textContent = moisture + '%';
+                });
+                document.querySelectorAll('[data-bind="sensors.temp"]').forEach(el => {
+                    el.textContent = temp + '°C';
+                });
+                document.querySelectorAll('[data-bind="sensors.light"]').forEach(el => {
+                    el.textContent = light + '%';
+                });
+                document.querySelectorAll('[data-bind="sensors.ph"]').forEach(el => {
+                    el.textContent = ph;
+                });
+            }
+
+            // Update sensor data every 5 seconds
+            setInterval(updateSensorData, 5000);
+        })();
+    </script>
+</body>
+</html>
